@@ -1,4 +1,6 @@
-﻿namespace BoggleUtils;
+﻿using System.Text;
+
+namespace BoggleUtils;
 
 public class Boggle
 {
@@ -70,5 +72,41 @@ public class Boggle
             _board[row_i][col_i] = _board[row_j][col_j];
             _board[row_j][col_j] = temp;
         }
+    }
+
+    public bool ValidateGuess(List<(int, int)> selectedDices)
+    {
+        if (selectedDices.Count <= 1)
+            return false;
+        if (selectedDices.Count != selectedDices.Distinct().Count())
+            return false;
+
+        (int, int)? lastSelected = null;
+        foreach ((int, int) selected in selectedDices)
+        {
+            if (lastSelected == null)
+            {
+                lastSelected = selected;
+                continue;
+            }
+
+            var (x, y) = selected;
+            var (lastX, lastY) = ((int, int)) lastSelected;
+            if (!(x + 1 != lastX && x - 1 != lastX))
+                return false;
+            if (!(y + 1 != lastY && y - 1 != lastY))
+                return false;
+        }
+
+        List<Dice> dicesGuess = new();
+        foreach (var (selectedX, selectedY) in selectedDices)
+            dicesGuess.Add(_board[selectedY][selectedX]);
+
+        StringBuilder stringGuess = new();
+
+        foreach (Dice dice in dicesGuess)
+            stringGuess.Append(dice.GetSelectedLetter());
+
+        return _database.ContainsWord(stringGuess.ToString());
     }
 }

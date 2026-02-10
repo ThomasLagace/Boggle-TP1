@@ -80,25 +80,8 @@ public class BoggleBoard
     {
         if (selectedDices.Count <= 1)
             return false;
-        if (selectedDices.Count != selectedDices.Distinct().Count())
+        if (!AreCoordsValid(selectedDices))
             return false;
-
-        (int, int)? lastSelected = null;
-        foreach ((int, int) selected in selectedDices)
-        {
-            if (lastSelected == null)
-            {
-                lastSelected = selected;
-                continue;
-            }
-
-            var (x, y) = selected;
-            var (lastX, lastY) = ((int, int)) lastSelected;
-            if (!(x + 1 != lastX && x - 1 != lastX))
-                return false;
-            if (!(y + 1 != lastY && y - 1 != lastY))
-                return false;
-        }
 
         List<Dice> dicesGuess = new();
         foreach (var (selectedX, selectedY) in selectedDices)
@@ -110,5 +93,30 @@ public class BoggleBoard
             stringGuess.Append(dice.GetSelectedLetter());
 
         return _database.ContainsWord(stringGuess.ToString());
+    }
+
+    public bool AreCoordsValid(List<(int, int)> coords)
+    {
+        if (coords.Count != coords.Distinct().Count())
+            return false;
+
+        (int, int)? lastCoord = null;
+        foreach ((int, int) coord in coords)
+        {
+            if (lastCoord == null)
+            {
+                lastCoord = coord;
+                continue;
+            }
+
+            var (x, y) = coord;
+            var (lastX, lastY) = ((int, int)) lastCoord;
+            if (!(x + 1 != lastX && x - 1 != lastX))
+                return false;
+            if (!(y + 1 != lastY && y - 1 != lastY))
+                return false;
+        }
+
+        return true;
     }
 }

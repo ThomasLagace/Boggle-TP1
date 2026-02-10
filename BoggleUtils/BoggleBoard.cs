@@ -57,8 +57,8 @@ public class BoggleBoard
         }
 
         // Random algorithm from https://www.csharphelper.com/howtos/howto_randomize_2d_array.html
-        int num_rows = _board.Count + 1;
-        int num_cols = _board[0].Count + 1;
+        int num_rows = _board.Count;
+        int num_cols = _board[0].Count;
         int num_dices = num_rows * num_cols;
         
         for (int i = 0; i < num_dices; i++)

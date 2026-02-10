@@ -119,7 +119,7 @@ public class BoggleBoard
             var (lastX, lastY) = ((int, int)) lastCoord;
             if (x + 1 != lastX && x - 1 != lastX && x != lastX)
                 return false;
-            if (y + 1 != lastY && y - 1 != lastY && y != lastX)
+            if (y + 1 != lastY && y - 1 != lastY && y != lastY)
                 return false;
         }
 

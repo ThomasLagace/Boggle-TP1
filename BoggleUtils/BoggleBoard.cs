@@ -7,6 +7,8 @@ public class BoggleBoard
     private BoggleWordsDatabase _database;
     private List<List<Dice>> _board;
 
+    public IReadOnlyList<IReadOnlyList<Dice>> Board => _board;
+
     public BoggleBoard(BoggleWordsDatabase database, List<List<Dice>> board)
     {
         _database = database;
@@ -38,7 +40,7 @@ public class BoggleBoard
         List<List<Dice>> board = new();
         for (var i = 0; i < 4; i++)
         {
-            board.Add([new Dice(dices[i + 0]), new Dice(dices[i + 1]), new Dice(dices[i + 2]), new Dice(dices[i + 3])]);
+            board.Add([new Dice(dices[i * 4 + 0]), new Dice(dices[i * 4 + 1]), new Dice(dices[i * 4 + 2]), new Dice(dices[i * 4 + 3])]);
         }
 
 

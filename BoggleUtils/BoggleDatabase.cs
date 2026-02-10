@@ -15,6 +15,8 @@ public class BoggleDatabase
 
     public bool ContainsWord(string word)
     {
+        if (word.Length < 3)
+            return false;
         return _wordsList.Contains(word.ToLower());
     }
 }

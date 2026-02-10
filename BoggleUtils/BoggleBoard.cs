@@ -2,18 +2,18 @@
 
 namespace BoggleUtils;
 
-public class Boggle
+public class BoggleBoard
 {
-    private BoggleDatabase _database;
+    private BoggleWordsDatabase _database;
     private List<List<Dice>> _board;
 
-    public Boggle(BoggleDatabase database, List<List<Dice>> board)
+    public BoggleBoard(BoggleWordsDatabase database, List<List<Dice>> board)
     {
         _database = database;
         _board = board;
     }
 
-    public Boggle(BoggleDatabase database)
+    public BoggleBoard(BoggleWordsDatabase database)
     {
         List<List<string>> dices =
         [

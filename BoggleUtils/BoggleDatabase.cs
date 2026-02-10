@@ -6,17 +6,15 @@ public class BoggleDatabase
 
     public BoggleDatabase(HashSet<string> wordList)
     {
-        _wordsList = wordList;
+        foreach (var word in wordList)
+            _wordsList.Add(word.ToLower().Trim());
     }
 
     public BoggleDatabase(string filePath)
-    {
-        foreach (var word in File.ReadLines(filePath))
-            _wordsList.Add(word.Trim());
-    }
+        : this(File.ReadLines(filePath).ToHashSet()) { }
 
     public bool ContainsWord(string word)
     {
-        return _wordsList.Contains(word);
+        return _wordsList.Contains(word.ToLower());
     }
 }

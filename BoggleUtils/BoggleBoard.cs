@@ -121,6 +121,7 @@ public class BoggleBoard
                 return false;
             if (y + 1 != lastY && y - 1 != lastY && y != lastY)
                 return false;
+            lastCoord = coord;
         }
 
         return true;

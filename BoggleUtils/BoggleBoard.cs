@@ -83,16 +83,22 @@ public class BoggleBoard
         if (!AreCoordsValid(selectedDices))
             return false;
 
+        string stringGuess = GetStringFromCoords(selectedDices);
+
+        return _database.ContainsWord(stringGuess.ToString());
+    }
+
+    public string GetStringFromCoords(List<(int, int)> coords)
+    {
         List<Dice> dicesGuess = new();
-        foreach (var (selectedX, selectedY) in selectedDices)
+        foreach (var (selectedX, selectedY) in coords)
             dicesGuess.Add(_board[selectedY][selectedX]);
 
         StringBuilder stringGuess = new();
 
         foreach (Dice dice in dicesGuess)
             stringGuess.Append(dice.GetSelectedLetter());
-
-        return _database.ContainsWord(stringGuess.ToString());
+        return stringGuess.ToString();
     }
 
     public bool AreCoordsValid(List<(int, int)> coords)

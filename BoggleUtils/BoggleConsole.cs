@@ -4,17 +4,15 @@ namespace BoggleUtils;
 
 public class BoggleConsole
 {
-    private BoggleBoard _board;
+    private BoggleGame _boggleGame;
 
-    public BoggleConsole(BoggleBoard board)
+    public BoggleConsole(BoggleGame boggleGame)
     {
-        _board = board;
+        _boggleGame = boggleGame;
     }
 
     public void Play()
     {
-        _board.RandomizeBoard();
-
         int currentPoints = 0;
         List<(int, int)> currentSelectedCoords = new();
         List<string> guessedWords = new();
@@ -24,11 +22,7 @@ public class BoggleConsole
             Console.WriteLine(GetBoggleString());
 
             Console.Write("Your current word is: ");
-            foreach (var (selectedCoordX, selectedCoordY) in currentSelectedCoords)
-            {
-                Dice dice = _board.Board[selectedCoordY][selectedCoordX];
-                Console.Write(dice.GetSelectedLetter());
-            }
+            Console.WriteLine(_boggleGame.Board.GetStringFromCoords(currentSelectedCoords));
             Console.WriteLine();
             Console.WriteLine();
 
@@ -42,9 +36,9 @@ public class BoggleConsole
 
                     continue;
                 }
-                else if (_board.ValidateGuess(currentSelectedCoords))
+                else if (_boggleGame.ValidateGuess(currentSelectedCoords))
                 {
-                    string word = _board.GetStringFromCoords(currentSelectedCoords);
+                    string word = _boggleGame.Board.GetStringFromCoords(currentSelectedCoords);
                     if (guessedWords.Contains(word))
                     {
                         Console.Clear();
@@ -52,7 +46,7 @@ public class BoggleConsole
                         continue;
                     }
 
-                    int addedPoints = BoggleUtils.GetPoints(_board.GetStringFromCoords(currentSelectedCoords));
+                    int addedPoints = BoggleUtils.GetPoints(_boggleGame.Board.GetStringFromCoords(currentSelectedCoords));
                     currentPoints += addedPoints;
                     currentSelectedCoords.Clear();
 
@@ -81,7 +75,7 @@ public class BoggleConsole
 
             currentSelectedCoords.Add((x, y));
 
-            if (!_board.AreCoordsValid(currentSelectedCoords))
+            if (!_boggleGame.Board.AreCoordsValid(currentSelectedCoords))
             {
                 currentSelectedCoords.RemoveAt(currentSelectedCoords.Count - 1);
 
@@ -100,11 +94,11 @@ public class BoggleConsole
         StringBuilder sb = new();
 
         sb.Append("---------\n");
-        foreach (var row in _board.Board)
+        foreach (var row in _boggleGame.Board.Board)
         {
             foreach (var dice in row)
             {
-                sb.Append("| " + dice.GetSelectedLetter() + " |");
+                sb.Append("| " + dice.GetLetter() + " |");
             }
             sb.Append("\n---------\n");
         }

@@ -22,17 +22,17 @@ public static class BoggleUtils
         }
     }
 
-    public static void RandomizeListOfDices(List<List<RandomDice>> dices)
+    public static void RandomizeListOfDice(List<List<RandomDie>> dice)
     {
-        foreach (var row in dices)
+        foreach (var row in dice)
         {
-            foreach (var dice in row)
-                dice.Roll();
+            foreach (var die in row)
+                die.Roll();
         }
 
         // Random algorithm from https://www.csharphelper.com/howtos/howto_randomize_2d_array.html
-        int num_rows = dices.Count;
-        int num_cols = dices[0].Count;
+        int num_rows = dice.Count;
+        int num_cols = dice[0].Count;
         int num_dices = num_rows * num_cols;
         
         for (int i = 0; i < num_dices; i++)
@@ -44,9 +44,9 @@ public static class BoggleUtils
             int row_j = j / num_cols;
             int col_j = j % num_cols;
 
-            RandomDice temp = dices[row_i][col_i];
-            dices[row_i][col_i] = dices[row_j][col_j];
-            dices[row_j][col_j] = temp;
+            RandomDie temp = dice[row_i][col_i];
+            dice[row_i][col_i] = dice[row_j][col_j];
+            dice[row_j][col_j] = temp;
         }
     }
 }

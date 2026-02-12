@@ -1,18 +1,18 @@
 ﻿namespace BoggleUtils;
 
-public class RandomDice : IDice
+public class RandomDie : IDie
 {
     public int SelectedLetter { get; private set; }
 
     private List<string> _possibleLetters;
 
-    public RandomDice(List<string> possibleLetters, int selectedLetter)
+    public RandomDie(List<string> possibleLetters, int selectedLetter)
     {
         _possibleLetters = possibleLetters;
         SelectedLetter = selectedLetter;
     }
 
-    public RandomDice(List<string> possibleLetters)
+    public RandomDie(List<string> possibleLetters)
         : this(possibleLetters, 0) { }
 
     public void Roll()

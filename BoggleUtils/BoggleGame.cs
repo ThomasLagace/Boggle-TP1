@@ -7,7 +7,7 @@ public class BoggleGame
 
     public BoggleGame(BoggleWordsDatabase database)
     {
-        List<List<string>> dices =
+        List<List<string>> dice =
         [
             ["E", "T", "U", "K", "N", "O"],
             ["E", "V", "G", "T", "I", "N"],
@@ -27,17 +27,17 @@ public class BoggleGame
             ["E", "N", "H", "R", "I", "S"]
         ];
 
-        List<List<RandomDice>> board = new();
+        List<List<RandomDie>> board = new();
         for (var i = 0; i < 4; i++)
         {
-            board.Add([new RandomDice(dices[i * 4 + 0]), new RandomDice(dices[i * 4 + 1]), new RandomDice(dices[i * 4 + 2]), new RandomDice(dices[i * 4 + 3])]);
+            board.Add([new RandomDie(dice[i * 4 + 0]), new RandomDie(dice[i * 4 + 1]), new RandomDie(dice[i * 4 + 2]), new RandomDie(dice[i * 4 + 3])]);
         }
 
-        BoggleUtils.RandomizeListOfDices(board);
+        BoggleUtils.RandomizeListOfDice(board);
 
 
         Database = database;
-        Board = new BoggleBoard(board.Select(row => row.Cast<IDice>().ToList()).ToList());
+        Board = new BoggleBoard(board.Select(row => row.Cast<IDie>().ToList()).ToList());
     }
 
     public bool ValidateGuess(List<(int, int)> selectedDices)

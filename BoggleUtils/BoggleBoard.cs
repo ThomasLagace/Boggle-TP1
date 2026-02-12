@@ -4,20 +4,20 @@ namespace BoggleUtils;
 
 public class BoggleBoard
 {
-    private List<List<IDice>> _board;
+    private List<List<IDie>> _board;
 
-    public IReadOnlyList<IReadOnlyList<IDice>> Board => _board;
+    public IReadOnlyList<IReadOnlyList<IDie>> Board => _board;
 
-    public BoggleBoard(List<List<IDice>> board)
+    public BoggleBoard(List<List<IDie>> board)
     {
         _board = board;
     }
 
-    public bool ValidateGuess(List<(int, int)> selectedDices)
+    public bool ValidateGuess(List<(int, int)> selectedDice)
     {
-        if (selectedDices.Count <= 1)
+        if (selectedDice.Count <= 1)
             return false;
-        if (!AreCoordsValid(selectedDices))
+        if (!AreCoordsValid(selectedDice))
             return false;
 
         return true;
@@ -25,14 +25,14 @@ public class BoggleBoard
 
     public string GetStringFromCoords(List<(int, int)> coords)
     {
-        List<IDice> dicesGuess = new();
+        List<IDie> diceGuess = new();
         foreach (var (selectedX, selectedY) in coords)
-            dicesGuess.Add(_board[selectedY][selectedX]);
+            diceGuess.Add(_board[selectedY][selectedX]);
 
         StringBuilder stringGuess = new();
 
-        foreach (IDice dice in dicesGuess)
-            stringGuess.Append(dice.GetLetter());
+        foreach (IDie die in diceGuess)
+            stringGuess.Append(die.GetLetter());
         return stringGuess.ToString();
     }
 

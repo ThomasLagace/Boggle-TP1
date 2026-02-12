@@ -1,6 +1,6 @@
 ﻿namespace BoggleUtils;
 
-public interface IDice
+public interface IDie
 {
     public string GetLetter();
 }

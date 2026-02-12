@@ -1,4 +1,4 @@
-﻿namespace BoggleUtils;
+﻿namespace Boggle;
 
 public static class BoggleUtils
 {

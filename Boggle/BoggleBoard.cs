@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace BoggleUtils;
+namespace Boggle;
 
 public class BoggleBoard
 {

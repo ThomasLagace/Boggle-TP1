@@ -1,4 +1,4 @@
-﻿namespace BoggleUtils;
+﻿namespace Boggle;
 
 public class SimpleDie : IDie
 {

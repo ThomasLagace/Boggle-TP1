@@ -6,8 +6,8 @@ public class Program
     {
 
         var db = new BoggleWordsDatabase("dict.txt");
-        var boggleBoard = new BoggleBoard(db);
-        var game = new BoggleConsole(boggleBoard);
+        var boggleGame = new BoggleGame(db);
+        var game = new BoggleConsole(boggleGame);
         game.Play();
     }
 }

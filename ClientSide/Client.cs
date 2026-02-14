@@ -15,10 +15,19 @@ public class Client
          *
          * Bytes:
          * [0-3]  : ClientEndPoint enum
-         * [4-11] : Time end of game (unix time)
+         * [4-11] : Time end of game (unix time) (long)
          * [12-27]: 16 chars for the dice, "Qu" is sent "Q", from top left to bottom right
          */
         StartGame,
+        /**
+         * Enpoint to update the score
+         *
+         * Bytes:
+         * [0-3] : ClientEndPoint enum
+         * [4-7] : Client Score (int)
+         * [8-11]: Opponent Score (int)
+         */
+        ScoreUpdate,
     }
 
     public IPEndPoint IP { get; private set; }
@@ -28,6 +37,7 @@ public class Client
     private Socket _socket;
 
     public event Action<DateTimeOffset, BoggleBoard>? OnGameStart;
+    public event Action<int, int>? OnScoreUpdate;
 
     public Client(IPEndPoint ip)
     {
@@ -77,18 +87,23 @@ public class Client
         {
             try
             {
-                byte[] byteEndPoint = await NetworkUtils.ReceiveExactAsync(_socket, 4, _cts.Token);
-                ClientEndPoint endPoint = (ClientEndPoint)Enum.ToObject(typeof(ClientEndPoint), BitConverter.ToInt32(byteEndPoint, 0));
+                int endPointInt = BitConverter.ToInt32(await NetworkUtils.ReceiveExactAsync(_socket, 4, _cts.Token));
+                ClientEndPoint endPoint = (ClientEndPoint)Enum.ToObject(typeof(ClientEndPoint), endPointInt);
 
                 switch (endPoint)
                 {
                     case ClientEndPoint.StartGame:
                         byte[] unixTimeBytes = await NetworkUtils.ReceiveExactAsync(_socket, 8, _cts.Token);
-                        DateTimeOffset endOfGameTime = DateTimeOffset.FromUnixTimeSeconds(BitConverter.ToInt64(unixTimeBytes, 0));
+                        DateTimeOffset endOfGameTime = DateTimeOffset.FromUnixTimeSeconds(BitConverter.ToInt64(unixTimeBytes));
 
                         byte[] diceBytes = await NetworkUtils.ReceiveExactAsync(_socket, 16, _cts.Token);
                         char[] diceChars = Encoding.UTF8.GetChars(diceBytes);
                         StartGameEndPoint(endOfGameTime, diceChars);
+                        break;
+                    case ClientEndPoint.ScoreUpdate:
+                        int clientScore = BitConverter.ToInt32(await NetworkUtils.ReceiveExactAsync(_socket, 4, _cts.Token));
+                        int opponentScore = BitConverter.ToInt32(await NetworkUtils.ReceiveExactAsync(_socket, 4, _cts.Token));
+                        ScoreUpdateEndPoint(clientScore, opponentScore);
                         break;
                 }
             }
@@ -124,5 +139,10 @@ public class Client
 
         BoggleBoard board = new(dice);
         OnGameStart?.Invoke(endOfGameTime, board);
+    }
+
+    private void ScoreUpdateEndPoint(int clientScore, int opponentScore)
+    {
+        OnScoreUpdate?.Invoke(clientScore, opponentScore);
     }
 }

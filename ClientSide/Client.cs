@@ -28,6 +28,15 @@ public class Client
          * [8-11]: Opponent Score (int)
          */
         ScoreUpdate,
+        /**
+         * Enpoint to send a message to the client
+         *
+         * Bytes:
+         * [0-3]      : ClientEndPoint enum
+         * [4-7]      : Size of message (n) (int)
+         * [8-(n + 8)]: Message (string)
+         */
+        ReceiveMessage,
     }
 
     public IPEndPoint IP { get; private set; }
@@ -38,6 +47,7 @@ public class Client
 
     public event Action<DateTimeOffset, BoggleBoard>? OnGameStart;
     public event Action<int, int>? OnScoreUpdate;
+    public event Action<string>? OnReceiveMessage;
 
     public Client(IPEndPoint ip)
     {
@@ -105,6 +115,11 @@ public class Client
                         int opponentScore = BitConverter.ToInt32(await NetworkUtils.ReceiveExactAsync(_socket, 4, _cts.Token));
                         ScoreUpdateEndPoint(clientScore, opponentScore);
                         break;
+                    case ClientEndPoint.ReceiveMessage:
+                        int lengthPrefix = BitConverter.ToInt32(await NetworkUtils.ReceiveExactAsync(_socket, 4, _cts.Token));
+                        string message = Encoding.UTF8.GetString(await NetworkUtils.ReceiveExactAsync(_socket, lengthPrefix, _cts.Token));
+                        ReceiveMessageEndPoint(message);
+                        break;
                 }
             }
             finally { }
@@ -144,5 +159,10 @@ public class Client
     private void ScoreUpdateEndPoint(int clientScore, int opponentScore)
     {
         OnScoreUpdate?.Invoke(clientScore, opponentScore);
+    }
+
+    private void ReceiveMessageEndPoint(string message)
+    {
+        OnReceiveMessage?.Invoke(message);
     }
 }

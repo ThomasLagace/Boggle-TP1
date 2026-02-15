@@ -39,11 +39,20 @@ public class Client
         ReceiveMessage,
     }
 
+    public enum LoggingSeverity
+    {
+        Info,
+        Warning,
+        Error,
+    }
+
     public IPEndPoint IP { get; private set; }
     public bool IsRunning { get; private set; } = false;
 
     private CancellationTokenSource? _cts;
     private Socket _socket;
+
+    public event Action<string, LoggingSeverity>? OnLogging;
 
     public event Action<DateTimeOffset, BoggleBoard>? OnGameStart;
     public event Action<int, int>? OnScoreUpdate;
@@ -57,7 +66,12 @@ public class Client
     
     public async void Connect()
     {
-        if (IsRunning) return;
+        if (IsRunning)
+        {
+            OnLogging?.Invoke("Trying to connect with an already opened connection.", LoggingSeverity.Warning);
+            return;
+        }
+        OnLogging?.Invoke($"Connecting to server at {IP.Address}:{IP.Port}.", LoggingSeverity.Info);
 
         _cts = new();
 
@@ -68,37 +82,55 @@ public class Client
         }
         catch (SocketException ex) when (ex.SocketErrorCode == SocketError.ConnectionRefused)
         {
-            Console.WriteLine(ex.Message);
+            OnLogging?.Invoke("Connection refused!", LoggingSeverity.Error);
             return;
         }
         catch (SocketException ex) when (ex.SocketErrorCode == SocketError.TimedOut)
         {
-            Console.WriteLine(ex.Message);
+            OnLogging?.Invoke("Connection timed out!", LoggingSeverity.Error);
             return;
         }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
+        OnLogging?.Invoke($"Connected to server at {IP.Address}:{IP.Port}.", LoggingSeverity.Info);
 
         Listen();
     }
 
     public void Disconnect()
     {
-        if (!IsRunning) return;
+        if (!IsRunning)
+        {
+            OnLogging?.Invoke("Trying to disconnect from a server without an opened connection.", LoggingSeverity.Warning);
+            return;
+        }
+
+        OnLogging?.Invoke("Trying to disconect from server.", LoggingSeverity.Info);
 
         _cts?.Cancel();
         _cts = null;
 
         _socket.Shutdown(SocketShutdown.Both);
         _socket.Close();
+
+        OnLogging?.Invoke("Disconnected from server.", LoggingSeverity.Info);
     }
 
     private async void Listen()
     {
+        OnLogging?.Invoke("Started listening requests from the server.", LoggingSeverity.Info);
+
         while (!_cts!.IsCancellationRequested)
         {
             try
             {
                 int endPointInt = BitConverter.ToInt32(await NetworkUtils.ReceiveExactAsync(_socket, 4, _cts.Token));
                 ClientEndPoint endPoint = (ClientEndPoint)Enum.ToObject(typeof(ClientEndPoint), endPointInt);
+
+                OnLogging?.Invoke($"The endpoint \"{endPoint}\" was triggered.", LoggingSeverity.Info);
 
                 switch (endPoint)
                 {
@@ -108,21 +140,30 @@ public class Client
 
                         byte[] diceBytes = await NetworkUtils.ReceiveExactAsync(_socket, 16, _cts.Token);
                         char[] diceChars = Encoding.UTF8.GetChars(diceBytes);
+
+                        OnLogging?.Invoke($"-- Got params endOfGameTime: \"{endOfGameTime}\", diceChars: \"{diceChars}\"", LoggingSeverity.Info);
+
                         StartGameEndPoint(endOfGameTime, diceChars);
                         break;
                     case ClientEndPoint.ScoreUpdate:
                         int clientScore = BitConverter.ToInt32(await NetworkUtils.ReceiveExactAsync(_socket, 4, _cts.Token));
                         int opponentScore = BitConverter.ToInt32(await NetworkUtils.ReceiveExactAsync(_socket, 4, _cts.Token));
+
+                        OnLogging?.Invoke($"-- Got params clientScore: \"{clientScore}\", opponentScore: \"{opponentScore}\"", LoggingSeverity.Info);
+
                         ScoreUpdateEndPoint(clientScore, opponentScore);
                         break;
                     case ClientEndPoint.ReceiveMessage:
                         int lengthPrefix = BitConverter.ToInt32(await NetworkUtils.ReceiveExactAsync(_socket, 4, _cts.Token));
                         string message = Encoding.UTF8.GetString(await NetworkUtils.ReceiveExactAsync(_socket, lengthPrefix, _cts.Token));
+
+                        OnLogging?.Invoke($"-- Got params lengthPrefix: \"{lengthPrefix}\", message: \"{message}\"", LoggingSeverity.Info);
+
                         ReceiveMessageEndPoint(message);
                         break;
                 }
             }
-            finally { }
+            catch (OperationCanceledException) { }
         }
     }
 

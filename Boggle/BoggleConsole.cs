@@ -48,6 +48,7 @@ public class BoggleConsole
 
                     int addedPoints = BoggleUtils.GetPoints(_boggleGame.Board.GetStringFromCoords(currentSelectedCoords));
                     currentPoints += addedPoints;
+                    guessedWords.Add(word);
                     currentSelectedCoords.Clear();
 
                     Console.Clear();

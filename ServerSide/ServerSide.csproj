@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Boggle\Boggle.csproj" />
+    <ProjectReference Include="..\Network\Network.csproj" />
   </ItemGroup>
 
 </Project>

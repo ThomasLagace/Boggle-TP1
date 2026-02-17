@@ -1,4 +1,5 @@
 ﻿using Boggle;
+using Network;
 using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
@@ -9,7 +10,7 @@ namespace ServerSide
     {
         public IPEndPoint Endpoint { get; init; }
         public Socket Socket { get; init; }
-        private BoggleWordsDatabase _db = new BoggleWordsDatabase(@"C:\Users\6327999\source\repos\Boggle-TP1\dict.txt");
+        private BoggleWordsDatabase _db = new BoggleWordsDatabase(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../dict.txt"));
         private CancellationTokenSource _cts = new CancellationTokenSource();
         private ConcurrentDictionary<Socket, BogglePlayer> _clients = new ConcurrentDictionary<Socket, BogglePlayer>();
 
@@ -54,9 +55,9 @@ namespace ServerSide
 
         private async Task RegisterPlayerAsync(Socket playerSocket, BoggleGame match) 
         {
-            _clients.TryAdd(playerSocket, new BogglePlayer("placeHolder", match));
+            string name = await NetworkUtils.ReceiveMessageAsync(playerSocket, _cts.Token);
 
-            //TODO send connection receipt to client
+            _clients.TryAdd(playerSocket, new BogglePlayer(name, match));
         }
     }
 }

@@ -4,13 +4,11 @@ namespace Boggle;
 
 public class BoggleBoard
 {
-    private List<List<IDie>> _board;
+    public IList<IList<IDie>> Board { get; private set; }
 
-    public IReadOnlyList<IReadOnlyList<IDie>> Board => _board;
-
-    public BoggleBoard(List<List<IDie>> board)
+    public BoggleBoard(IList<IList<IDie>> board)
     {
-        _board = board;
+        Board = board;
     }
 
     public bool ValidateGuess(List<(int, int)> selectedDice)
@@ -27,7 +25,7 @@ public class BoggleBoard
     {
         List<IDie> diceGuess = new();
         foreach (var (selectedX, selectedY) in coords)
-            diceGuess.Add(_board[selectedY][selectedX]);
+            diceGuess.Add(Board[selectedY][selectedX]);
 
         StringBuilder stringGuess = new();
 

@@ -1,4 +1,5 @@
-﻿using System.Net.Sockets;
+﻿using System.Net;
+using System.Net.Sockets;
 using System.Text;
 
 namespace Network;
@@ -22,5 +23,23 @@ public static class NetworkUtils
             received += bytesRead;
         }
         return buffer;
+    }
+
+    public static bool IsValidAddress(string address, string port, out IPEndPoint? iPEndPoint)
+    {
+        iPEndPoint = null;
+        if (!ConfirmPort(port, out int portInt)) return false;
+        if (IPAddress.TryParse(address, out IPAddress? iPAddress)) return false;
+
+        iPEndPoint = new(iPAddress!, portInt);
+        return true;
+    }
+
+    public static bool ConfirmPort(string input, out int holder)
+    {
+        if (!int.TryParse(input, out holder)) return false;
+        if (input == null || input.Length == 0) return false;
+
+        return holder > 0 && holder <= 65535;
     }
 }

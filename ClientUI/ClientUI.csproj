@@ -4,4 +4,9 @@
     <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'android' ">net9.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
   </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Boggle\Boggle.csproj" />
+    <ProjectReference Include="..\ClientSide\ClientSide.csproj" />
+    <ProjectReference Include="..\Network\Network.csproj" />
+  </ItemGroup>
 </Project>

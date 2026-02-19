@@ -45,7 +45,7 @@ public static class NetworkUtils
     {
         iPEndPoint = null;
         if (!ConfirmPort(port, out int portInt)) return false;
-        if (IPAddress.TryParse(address, out IPAddress? iPAddress)) return false;
+        if (!IPAddress.TryParse(address, out IPAddress? iPAddress)) return false;
 
         iPEndPoint = new(iPAddress!, portInt);
         return true;

@@ -7,19 +7,54 @@ public partial class BoggleBoardNode : Node
 {
     private BoggleBoard _boggleBoard;
 
-    public void Initialize(Godot.Collections.Array<Godot.Collections.Array<string>> letters)
+    public BoggleBoardNode(BoggleBoard boggleBoard)
     {
-        List<List<IDie>> dice = new List<List<IDie>>();
-        foreach (var row in letters)
+        _boggleBoard = boggleBoard;
+    }
+
+    public bool ValidateGuess(Godot.Collections.Array<Godot.Collections.Array<int>> godotCoords)
+    {
+        List<(int, int)> coords = ConvertGodotCoordsToTupleCoords(godotCoords);
+        return _boggleBoard.ValidateGuess(coords);
+    }
+
+    public string GetStringFromCoords(Godot.Collections.Array<Godot.Collections.Array<int>> godotCoords)
+    {
+        List<(int, int)> coords = ConvertGodotCoordsToTupleCoords(godotCoords);
+        return _boggleBoard.GetStringFromCoords(coords);
+    }
+
+    public bool AreCoordsValid(Godot.Collections.Array<Godot.Collections.Array<int>> godotCoords)
+    {
+        List<(int, int)> coords = ConvertGodotCoordsToTupleCoords(godotCoords);
+        return _boggleBoard.AreCoordsValid(coords);
+    }
+
+    public Godot.Collections.Array<Godot.Collections.Array<string>> GetBoardLetters()
+    {
+        Godot.Collections.Array<Godot.Collections.Array<string>> letters = new();
+
+        foreach (var row in _boggleBoard.Board)
         {
-            List<IDie> newRow = new List<IDie>();
-            foreach (var letter in row)
+            Godot.Collections.Array<string> rowList = new();
+            foreach (IDie die in row)
             {
-                newRow.Add(new SimpleDie(letter));
+                rowList.Add(die.GetLetter());
             }
-            dice.Add(newRow);
+            letters.Add(rowList);
         }
 
-        _boggleBoard = new BoggleBoard(dice);
+        return letters;
+    }
+
+    private static List<(int, int)> ConvertGodotCoordsToTupleCoords(Godot.Collections.Array<Godot.Collections.Array<int>> godotCoords)
+    {
+        List<(int, int)> coords = new();
+        foreach (var godotCoord in godotCoords)
+        {
+            if (godotCoord.Count < 2) continue;
+            coords.Add((godotCoord[0], godotCoord[1]));
+        }
+        return coords;
     }
 }

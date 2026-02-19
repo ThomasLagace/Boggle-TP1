@@ -64,7 +64,7 @@ public class Client
         _socket = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
     }
     
-    public async void Connect()
+    public async void ConnectAsync()
     {
         if (IsRunning)
         {
@@ -97,7 +97,7 @@ public class Client
 
         OnLogging?.Invoke($"Connected to server at {IP.Address}:{IP.Port}.", LoggingSeverity.Info);
 
-        Listen();
+        ListenAsync();
     }
 
     public void Disconnect()
@@ -119,7 +119,7 @@ public class Client
         OnLogging?.Invoke("Disconnected from server.", LoggingSeverity.Info);
     }
 
-    private async void Listen()
+    private async void ListenAsync()
     {
         OnLogging?.Invoke("Started listening requests from the server.", LoggingSeverity.Info);
 

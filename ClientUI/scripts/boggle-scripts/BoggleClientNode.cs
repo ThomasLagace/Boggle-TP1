@@ -60,17 +60,9 @@ public partial class BoggleClientNode : Node
 			EmitSignal(SignalName.OnConnectReturn, false);
 			return;
 		}
-		try
-		{
-			await _client.ConnectAsync();
-		}
-		catch (Exception)
-		{
-			EmitSignal(SignalName.OnConnectReturn, false);
-			return;
-		}
+        await _client.ConnectAsync();
 
-        EmitSignal(SignalName.OnConnectReturn, true);
+        EmitSignal(SignalName.OnConnectReturn, _client.IsRunning);
 	}
 
 	public static BoggleClientNode? CreateClientNode(string stringIp, string stringPort)

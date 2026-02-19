@@ -65,7 +65,15 @@ public partial class BoggleClientNode : Node
         EmitSignal(SignalName.OnConnectReturn, _client.IsRunning);
 	}
 
-	public static BoggleClientNode? CreateClientNode(string stringIp, string stringPort)
+    public override void _Notification(int what)
+    {
+		if (what == NotificationPredelete)
+		{
+			_board?.QueueFree();
+		}
+    }
+
+    public static BoggleClientNode? CreateClientNode(string stringIp, string stringPort)
 	{
 		if (!NetworkUtils.IsValidAddress(stringIp, stringPort, out IPEndPoint? iPEndPoint))
 			return null;

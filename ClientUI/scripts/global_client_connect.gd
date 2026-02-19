@@ -5,6 +5,9 @@ signal on_client_connect()
 var client: BoggleClientNode = null
 
 func create_client(ip: String, port: String) -> bool:
+	if client != null:
+		client.queue_free()
+		client = null
 	print("Trying to create client")
 	client = BoggleClientNode.CreateClientNode(ip, port)
 	

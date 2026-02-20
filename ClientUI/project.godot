@@ -17,6 +17,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 GlobalClientConnect="*uid://brwm26bypt1wf"
+GlobalClientConsoleLogging="*uid://duv67pdbnbecv"
 
 [dotnet]
 

@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://snmfqewwhrg7"]
+
+[ext_resource type="Script" uid="uid://cldqnocdi0r44" path="res://scripts/boggle_game_ui.gd" id="1_jqj7l"]
+
+[node name="BoggleGameUi" type="Control" unique_id=1019244804]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_jqj7l")
+
+[node name="Background" type="Panel" parent="." unique_id=1468274690]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

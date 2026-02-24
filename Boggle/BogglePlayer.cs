@@ -10,7 +10,7 @@ namespace Boggle
     {
         public BoggleGame Match { get; init; }
         public string Name { get; init; }
-        public int Score { get; private set; }
+        public int Score { get; set; }
 
         public BogglePlayer(string name, BoggleGame match) 
         {

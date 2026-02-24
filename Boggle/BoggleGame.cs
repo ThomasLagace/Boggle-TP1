@@ -35,7 +35,6 @@ public class BoggleGame
 
         BoggleUtils.RandomizeListOfDice(board);
 
-
         Database = database;
         Board = new BoggleBoard(board.Select(row => row.Cast<IDie>().ToList()).ToList());
     }

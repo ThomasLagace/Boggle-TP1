@@ -10,7 +10,7 @@ namespace ServerSide
     {
         public IPEndPoint Endpoint { get; init; }
         public Socket Socket { get; init; }
-        private BoggleWordsDatabase _db = new BoggleWordsDatabase(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../dict.txt"));
+        private BoggleWordsDatabase _db = new BoggleWordsDatabase("../../../../dict.txt");
         private CancellationTokenSource _cts = new CancellationTokenSource();
         private ConcurrentDictionary<Socket, BogglePlayer> _clients = new ConcurrentDictionary<Socket, BogglePlayer>();
 
@@ -24,14 +24,14 @@ namespace ServerSide
         {
             try
             {
-                this.Socket.Bind(this.Endpoint);
+                Socket.Bind(Endpoint);
             }
             catch (SocketException ex) when (ex.SocketErrorCode == SocketError.AddressAlreadyInUse)
             {
                 return;
             }
 
-            this.Socket.Listen(10);
+            Socket.Listen(10);
 
             while (!_cts.IsCancellationRequested) 
             {
@@ -39,11 +39,17 @@ namespace ServerSide
 
                 try
                 {
-                    Socket socketPlayer1 = await this.Socket.AcceptAsync(_cts.Token);
+                    Socket socketPlayer1 = await Socket.AcceptAsync(_cts.Token);
                     await RegisterPlayerAsync(socketPlayer1, queuedMatch);
 
-                    Socket socketPlayer2 = await this.Socket.AcceptAsync(_cts.Token);
+                    Socket socketPlayer2 = await Socket.AcceptAsync(_cts.Token);
                     await RegisterPlayerAsync(socketPlayer2, queuedMatch);
+
+                    await HandleMatchAsync(socketPlayer1);
+                    await HandleMatchAsync(socketPlayer2);
+
+                    //Add time property to BoggleGame
+                    await NetworkUtils.SendMessageAsync(socketPlayer1, new Packet<BoggleGame>(Network.Endpoint.StartGame, queuedMatch));
                 }
                 catch (SocketException ex) when (ex.SocketErrorCode == SocketError.Interrupted)
                 {
@@ -53,11 +59,34 @@ namespace ServerSide
             }
         }
 
+        private async Task HandleMatchAsync(Socket playerSocket)
+        {
+            BogglePlayer player;
+            _clients.TryGetValue(playerSocket, out player!);
+
+            while (!_cts.IsCancellationRequested)
+            {
+                Packet<List<(int, int)>> packet = await NetworkUtils.ReceiveMessageAsync<List<(int, int)>>(playerSocket, _cts.Token);
+                List<(int, int)> guess = packet.Payload;
+
+                if (!player.Match.ValidateGuess(guess))
+                {
+                    continue;
+                }
+
+                string word = player.Match.Board.GetStringFromCoords(guess);
+                int points = BoggleUtils.GetPoints(word);
+
+                //Handle duplicate word verification
+                player.Score += points;
+            }
+        }
+
         private async Task RegisterPlayerAsync(Socket playerSocket, BoggleGame match) 
         {
-            string name = await NetworkUtils.ReceiveMessageAsync(playerSocket, _cts.Token);
+            Packet<string> name = await NetworkUtils.ReceiveMessageAsync<string>(playerSocket, _cts.Token);
 
-            _clients.TryAdd(playerSocket, new BogglePlayer(name, match));
+            _clients.TryAdd(playerSocket, new BogglePlayer(name.Payload, match));
         }
     }
 }

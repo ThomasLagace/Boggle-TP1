@@ -12,21 +12,21 @@ public partial class BoggleBoardNode : Node
         _boggleBoard = boggleBoard;
     }
 
-    public bool ValidateGuess(Godot.Collections.Array<Godot.Collections.Array<int>> godotCoords)
+    public bool ValidateGuess(Godot.Collections.Array<BoggleCoords> boggleCoords)
     {
-        List<(int, int)> coords = ConvertGodotCoordsToTupleCoords(godotCoords);
+        List<(int, int)> coords = ConvertBoggleCoordsToTuple(boggleCoords);
         return _boggleBoard.ValidateGuess(coords);
     }
 
-    public string GetStringFromCoords(Godot.Collections.Array<Godot.Collections.Array<int>> godotCoords)
+    public string GetStringFromCoords(Godot.Collections.Array<BoggleCoords> boggleCoords)
     {
-        List<(int, int)> coords = ConvertGodotCoordsToTupleCoords(godotCoords);
+        List<(int, int)> coords = ConvertBoggleCoordsToTuple(boggleCoords);
         return _boggleBoard.GetStringFromCoords(coords);
     }
 
-    public bool AreCoordsValid(Godot.Collections.Array<Godot.Collections.Array<int>> godotCoords)
+    public bool AreCoordsValid(Godot.Collections.Array<BoggleCoords> boggleCoords)
     {
-        List<(int, int)> coords = ConvertGodotCoordsToTupleCoords(godotCoords);
+        List<(int, int)> coords = ConvertBoggleCoordsToTuple(boggleCoords);
         return _boggleBoard.AreCoordsValid(coords);
     }
 
@@ -47,14 +47,13 @@ public partial class BoggleBoardNode : Node
         return letters;
     }
 
-    private static List<(int, int)> ConvertGodotCoordsToTupleCoords(Godot.Collections.Array<Godot.Collections.Array<int>> godotCoords)
+    private static List<(int, int)> ConvertBoggleCoordsToTuple(Godot.Collections.Array<BoggleCoords> boggleCoords)
     {
-        List<(int, int)> coords = new();
-        foreach (var godotCoord in godotCoords)
+        List<(int, int)> tupleCoords = new();
+        foreach (var coords in boggleCoords)
         {
-            if (godotCoord.Count < 2) continue;
-            coords.Add((godotCoord[0], godotCoord[1]));
+            tupleCoords.Add((coords.Y, coords.X));
         }
-        return coords;
+        return tupleCoords;
     }
 }

@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://4x1unsvjkpm0"]
+
+[ext_resource type="Script" uid="uid://bljlpwlawpksa" path="res://scripts/boggle_board_ui_scripts/boggle_button.gd" id="1_bware"]
+
+[node name="BoggleButton" type="Button" unique_id=1109865029]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_bware")

@@ -1,8 +1,9 @@
 [gd_scene format=3 uid="uid://snmfqewwhrg7"]
 
 [ext_resource type="Script" uid="uid://cldqnocdi0r44" path="res://scripts/boggle_game_ui.gd" id="1_jqj7l"]
+[ext_resource type="PackedScene" uid="uid://dalwpl7fs58kp" path="res://scenes/boggle_board_ui.tscn" id="2_0au77"]
 
-[node name="BoggleGameUi" type="Control" unique_id=1019244804]
+[node name="BoggleGameUi" type="Control" unique_id=1019244804 node_paths=PackedStringArray("boggle_board_ui", "submit_button")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -10,11 +11,16 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_jqj7l")
+boggle_board_ui = NodePath("BoggleBoardUI")
+submit_button = NodePath("SubmitButton")
 
-[node name="Background" type="Panel" parent="." unique_id=1468274690]
+[node name="BoggleBoardUI" parent="." unique_id=793989032 instance=ExtResource("2_0au77")]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+
+[node name="SubmitButton" type="Button" parent="." unique_id=181134456]
+layout_mode = 0
+offset_left = 998.0
+offset_top = 560.0
+offset_right = 1061.0
+offset_bottom = 591.0
+text = "Submit"

@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://dalwpl7fs58kp"]
+
+[ext_resource type="Script" uid="uid://d2okef5tg4vjo" path="res://scripts/boggle_board_ui_scripts/boggle_board_ui.gd" id="1_4b8bx"]
+[ext_resource type="PackedScene" uid="uid://4x1unsvjkpm0" path="res://scenes/boggle_button.tscn" id="2_ogc3l"]
+
+[node name="BoggleBoardUI" type="Control" unique_id=910523621 node_paths=PackedStringArray("boggle_button_parent")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_4b8bx")
+boggle_button_scene = ExtResource("2_ogc3l")
+boggle_button_parent = NodePath("MarginContainer/GridContainer")
+
+[node name="Panel" type="Panel" parent="." unique_id=13661677]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=28469601]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 255
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 255
+theme_override_constants/margin_bottom = 50
+
+[node name="GridContainer" type="GridContainer" parent="MarginContainer" unique_id=1311055440]
+layout_mode = 2
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 4
+columns = 4

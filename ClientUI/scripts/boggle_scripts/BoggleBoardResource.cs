@@ -3,11 +3,11 @@ using Godot;
 using System.Collections.Generic;
 
 [GlobalClass]
-public partial class BoggleBoardNode : Node
+public partial class BoggleBoardResource : Resource
 {
     private BoggleBoard _boggleBoard;
 
-    public BoggleBoardNode(BoggleBoard boggleBoard)
+    public BoggleBoardResource(BoggleBoard boggleBoard)
     {
         _boggleBoard = boggleBoard;
     }

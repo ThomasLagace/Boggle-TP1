@@ -22,10 +22,10 @@ public partial class BoggleClientNode : Node
     public delegate void OnReceiveMessageEventHandler(string message);
 
     public bool HasGameStarted() => _board != null;
-    public BoggleBoardNode? GetBoggleBoard() => _board;
+    public BoggleBoardResource? GetBoggleBoard() => _board;
 
     private Client _client;
-    private BoggleBoardNode? _board;
+    private BoggleBoardResource? _board;
 
     public BoggleClientNode(IPEndPoint iPEndPoint)
     {
@@ -38,7 +38,7 @@ public partial class BoggleClientNode : Node
 
         _client.OnGameStart += (DateTimeOffset endTime, BoggleBoard board) =>
         {
-            _board = new BoggleBoardNode(board);
+            _board = new BoggleBoardResource(board);
             EmitSignal(SignalName.OnGameStart, endTime.ToUnixTimeSeconds());
         };
 
@@ -63,14 +63,6 @@ public partial class BoggleClientNode : Node
         await _client.ConnectAsync();
 
         EmitSignal(SignalName.OnConnectReturn, _client.IsRunning);
-    }
-
-    public override void _Notification(int what)
-    {
-        if (what == NotificationPredelete)
-        {
-            _board?.QueueFree();
-        }
     }
 
     public static BoggleClientNode? CreateClientNode(string stringIp, string stringPort)

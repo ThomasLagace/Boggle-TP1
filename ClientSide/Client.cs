@@ -1,44 +1,13 @@
 ﻿using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using Boggle;
 using Network;
+using Network.Client;
 
 namespace ClientSide;
 
 public class Client
 {
-    public enum ClientEndPoint
-    {
-        /**
-         * Enpoint to start the game
-         *
-         * Bytes:
-         * [0-3]  : ClientEndPoint enum
-         * [4-11] : Time end of game (unix time) (long)
-         * [12-27]: 16 chars for the dice, "Qu" is sent "Q", from top left to bottom right
-         */
-        StartGame,
-        /**
-         * Enpoint to update the score
-         *
-         * Bytes:
-         * [0-3] : ClientEndPoint enum
-         * [4-7] : Client Score (int)
-         * [8-11]: Opponent Score (int)
-         */
-        ScoreUpdate,
-        /**
-         * Enpoint to send a message to the client
-         *
-         * Bytes:
-         * [0-3]      : ClientEndPoint enum
-         * [4-7]      : Size of message (n) (int)
-         * [8-(n + 8)]: Message (string)
-         */
-        ReceiveMessage,
-    }
-
     public enum LoggingSeverity
     {
         Info,
@@ -97,7 +66,7 @@ public class Client
 
         OnLogging?.Invoke($"Connected to server at {IP.Address}:{IP.Port}.", LoggingSeverity.Info);
 
-        ListenAsync();
+        _ = ListenAsync();
     }
 
     public void Disconnect()
@@ -125,85 +94,44 @@ public class Client
 
         while (!_cts!.IsCancellationRequested)
         {
+            Packet<object> packet;
             try
             {
-                int endPointInt = BitConverter.ToInt32(await NetworkUtils.ReceiveExactAsync(_socket, 4, _cts.Token));
-                ClientEndPoint endPoint = (ClientEndPoint)Enum.ToObject(typeof(ClientEndPoint), endPointInt);
-
-                OnLogging?.Invoke($"The endpoint \"{endPoint}\" was triggered.", LoggingSeverity.Info);
-
-                switch (endPoint)
-                {
-                    case ClientEndPoint.StartGame:
-                        byte[] unixTimeBytes = await NetworkUtils.ReceiveExactAsync(_socket, 8, _cts.Token);
-                        DateTimeOffset endOfGameTime = DateTimeOffset.FromUnixTimeSeconds(BitConverter.ToInt64(unixTimeBytes));
-
-                        byte[] diceBytes = await NetworkUtils.ReceiveExactAsync(_socket, 16, _cts.Token);
-                        char[] diceChars = Encoding.UTF8.GetChars(diceBytes);
-
-                        OnLogging?.Invoke($"-- Got params endOfGameTime: \"{endOfGameTime}\", diceChars: \"{diceChars}\"", LoggingSeverity.Info);
-
-                        StartGameEndPoint(endOfGameTime, diceChars);
-                        break;
-                    case ClientEndPoint.ScoreUpdate:
-                        int clientScore = BitConverter.ToInt32(await NetworkUtils.ReceiveExactAsync(_socket, 4, _cts.Token));
-                        int opponentScore = BitConverter.ToInt32(await NetworkUtils.ReceiveExactAsync(_socket, 4, _cts.Token));
-
-                        OnLogging?.Invoke($"-- Got params clientScore: \"{clientScore}\", opponentScore: \"{opponentScore}\"", LoggingSeverity.Info);
-
-                        ScoreUpdateEndPoint(clientScore, opponentScore);
-                        break;
-                    case ClientEndPoint.ReceiveMessage:
-                        int lengthPrefix = BitConverter.ToInt32(await NetworkUtils.ReceiveExactAsync(_socket, 4, _cts.Token));
-                        string message = Encoding.UTF8.GetString(await NetworkUtils.ReceiveExactAsync(_socket, lengthPrefix, _cts.Token));
-
-                        OnLogging?.Invoke($"-- Got params lengthPrefix: \"{lengthPrefix}\", message: \"{message}\"", LoggingSeverity.Info);
-
-                        ReceiveMessageEndPoint(message);
-                        break;
-                }
+                packet = await NetworkUtils.ReceiveMessageAsync<object>(_socket, _cts.Token);
             }
-            catch (OperationCanceledException) { }
+            catch (OperationCanceledException) { return; }
+
+            switch (packet.Endpoint)
+            {
+                case Endpoint.StartGame:
+                    if (packet.Payload is StartGameEndpoint startEndpointParams)
+                        StartGameEndPoint(startEndpointParams);
+                    break;
+                case Endpoint.ScoreUpdate:
+                    if (packet.Payload is ScoreUpdateEndpoint scoreUpdateEndpointParams)
+                        ScoreUpdateEndPoint(scoreUpdateEndpointParams);
+                    break;
+                case Endpoint.ReceiveMessage:
+                    if (packet.Payload is ReceiveMessageEndpoint receiveMessageEndpointParams)
+                        ReceiveMessageEndPoint(receiveMessageEndpointParams);
+                    break;
+            }
         }
     }
 
-    private void StartGameEndPoint(DateTimeOffset endOfGameTime, char[] diceChars)
+    private void StartGameEndPoint(StartGameEndpoint endpointParams)
     {
-        if (diceChars.Length < 16)
-            return;
-        List<string> diceStrings = new();
-
-        for (int i = 0; i < 16; i++)
-        {
-            char diceChar = diceChars[i];
-            if (diceChar == 'Q')
-                diceStrings.Add("Qu");
-            else
-                diceStrings.Add(diceChar.ToString());
-        }
-        
-        List<List<IDie>> dice = new();
-        for (var i = 0; i < 4; i++)
-        {
-            dice.Add([
-                new SimpleDie(diceStrings[i * 4 + 0]),
-                new SimpleDie(diceStrings[i * 4 + 1]),
-                new SimpleDie(diceStrings[i * 4 + 2]),
-                new SimpleDie(diceStrings[i * 4 + 3])
-            ]);
-        }
-
-        BoggleBoard board = new(dice);
-        OnGameStart?.Invoke(endOfGameTime, board);
+        BoggleBoard board = endpointParams.BoggleBoard;
+        OnGameStart?.Invoke(endpointParams.TimeEndOfGame, board);
     }
 
-    private void ScoreUpdateEndPoint(int clientScore, int opponentScore)
+    private void ScoreUpdateEndPoint(ScoreUpdateEndpoint endpointParams)
     {
-        OnScoreUpdate?.Invoke(clientScore, opponentScore);
+        OnScoreUpdate?.Invoke(endpointParams.ClientScore, endpointParams.OpponentScore);
     }
 
-    private void ReceiveMessageEndPoint(string message)
+    private void ReceiveMessageEndPoint(ReceiveMessageEndpoint receiveMessageEndpointParams)
     {
-        OnReceiveMessage?.Invoke(message);
+        OnReceiveMessage?.Invoke(receiveMessageEndpointParams.Message);
     }
 }

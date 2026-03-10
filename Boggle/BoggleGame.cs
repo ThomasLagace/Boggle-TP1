@@ -1,9 +1,14 @@
-﻿namespace Boggle;
+﻿using System.Diagnostics;
+using System.Threading.Tasks;
+
+namespace Boggle;
 
 public class BoggleGame
 {
     public BoggleWordsDatabase Database { get; private set; }
     public BoggleBoard Board { get; private set; }
+    public int Clock { get; private set; }
+    public event Action? OnGameOver;
 
     public BoggleGame(BoggleWordsDatabase database)
     {
@@ -37,6 +42,17 @@ public class BoggleGame
 
         Database = database;
         Board = new BoggleBoard(board.Select(row => row.Cast<IDie>().ToList()).ToList());
+        Clock = 180;
+    }
+
+    public async Task StartGame() 
+    {
+        for (; Clock > 0; Clock--) 
+        {
+            await Task.Delay(1000);
+        }
+
+        OnGameOver?.Invoke();
     }
 
     public bool ValidateGuess(List<(int, int)> selectedDices)

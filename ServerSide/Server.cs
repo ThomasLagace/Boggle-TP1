@@ -50,6 +50,7 @@ namespace ServerSide
 
                     //Add time property to BoggleGame
                     await NetworkUtils.SendMessageAsync(socketPlayer1, new Packet<BoggleGame>(Network.Endpoint.StartGame, queuedMatch));
+                    await NetworkUtils.SendMessageAsync(socketPlayer2, new Packet<BoggleGame>(Network.Endpoint.StartGame, queuedMatch));
                 }
                 catch (SocketException ex) when (ex.SocketErrorCode == SocketError.Interrupted)
                 {

@@ -9,9 +9,6 @@ using System.Net;
 public partial class BoggleClientNode : Node
 {
     [Signal]
-    public delegate void OnConnectReturnEventHandler(bool connectedSuccessfully);
-
-    [Signal]
     public delegate void OnLoggingEventHandler(string message, Client.LoggingSeverity severity);
 
     [Signal]

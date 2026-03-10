@@ -23,12 +23,13 @@ func create_client(ip: String, port: String) -> bool:
 func connect_client() -> void:
 	if client != null:
 		print("Trying to connect")
-		client.ConnectAsync(func(connected):
-			if connected:
-				print("Connected successfully!")
-				on_client_connect.emit()
-			else:
-				print("Failed to connect")
-		)
+		client.ConnectAsync(on_client_connect_callback)
 	else:
 		print("Trying to connect with no client created")
+
+func on_client_connect_callback(connected):
+	if connected:
+		print("Connected successfully!")
+		on_client_connect.emit()
+	else:
+		print("Failed to connect")

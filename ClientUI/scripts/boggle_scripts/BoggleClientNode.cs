@@ -53,16 +53,16 @@ public partial class BoggleClientNode : Node
         };
     }
 
-    public async void ConnectAsync()
+    public async void ConnectAsync(Action<bool> onConnectionCallback)
     {
         if (_client == null)
         {
-            EmitSignal(SignalName.OnConnectReturn, false);
+            onConnectionCallback(false);
             return;
         }
         await _client.ConnectAsync();
 
-        EmitSignal(SignalName.OnConnectReturn, _client.IsRunning);
+        onConnectionCallback(_client.IsRunning);
     }
 
     public static BoggleClientNode? CreateClientNode(string stringIp, string stringPort)

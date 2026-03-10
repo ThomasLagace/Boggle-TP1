@@ -26,8 +26,14 @@ func submit_guess() -> void:
 	on_submit_guess.emit(_current_guess)
 	_current_guess = []
 
+func remove_last_guess() -> void:
+	_current_guess.pop_back()
+
 func add_guess(coords: BoggleCoords) -> void:
 	var new_guess = _current_guess + [coords]
 	if _board.AreCoordsValid(new_guess):
 		print("Adding a guess at [%d, %d]" % [coords.X, coords.Y])
 		_current_guess.assign(new_guess)
+
+func get_current_word() -> String:
+	return _board.GetStringFromCoords(_current_guess)

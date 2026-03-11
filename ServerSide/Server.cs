@@ -10,14 +10,16 @@ namespace ServerSide
     {
         public IPEndPoint Endpoint { get; init; }
         public Socket Socket { get; init; }
-        private BoggleWordsDatabase _db = new BoggleWordsDatabase("../../../../dict.txt");
-        private CancellationTokenSource _cts = new CancellationTokenSource();
-        private ConcurrentDictionary<Socket, BogglePlayer> _clients = new ConcurrentDictionary<Socket, BogglePlayer>();
+        private readonly int _connectionQueuecapcity;
+        private readonly BoggleWordsDatabase _db = new("../../../../dict.txt");
+        private readonly CancellationTokenSource _cts = new();
+        private readonly ConcurrentDictionary<Socket, BogglePlayer> _clients = new();
 
-        public Server(IPEndPoint endpoint)
+        public Server(IPEndPoint endpoint, int connectionQueueCapacity = 10)
         {
             this.Endpoint = endpoint;
             this.Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            this._connectionQueuecapcity = connectionQueueCapacity;
         }
 
         public async Task StartupAsync() 
@@ -31,7 +33,7 @@ namespace ServerSide
                 return;
             }
 
-            Socket.Listen(10);
+            Socket.Listen(_connectionQueuecapcity);
 
             while (!_cts.IsCancellationRequested) 
             {

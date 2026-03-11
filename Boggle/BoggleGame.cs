@@ -10,7 +10,7 @@ public class BoggleGame
     public int Clock { get; private set; }
     public event Action? OnGameOver;
 
-    public BoggleGame(BoggleWordsDatabase database)
+    public BoggleGame(BoggleWordsDatabase database, int gameDurationSeconds = 180)
     {
         List<List<string>> dice =
         [
@@ -42,7 +42,7 @@ public class BoggleGame
 
         Database = database;
         Board = new BoggleBoard(board.Select(row => row.Cast<IDie>().ToList()).ToList());
-        Clock = 180;
+        Clock = gameDurationSeconds;
     }
 
     public async Task StartGame() 
@@ -52,7 +52,7 @@ public class BoggleGame
             await Task.Delay(1000);
         }
 
-        OnGameOver?.Invoke();
+        this.OnGameOver?.Invoke();
     }
 
     public bool ValidateGuess(List<(int, int)> selectedDices)

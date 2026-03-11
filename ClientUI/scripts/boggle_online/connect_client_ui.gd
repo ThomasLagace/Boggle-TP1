@@ -14,7 +14,9 @@ func _ready() -> void:
 	connect_button.pressed.connect(on_connect_button_press)
 	
 	GlobalClientConnect.on_client_connect.connect(func():
-		get_tree().change_scene_to_packed(on_connect_scene)
+		var scene = on_connect_scene.instantiate()
+		scene.intialize(GlobalClientConnect.client)
+		get_tree().change_scene_to_node(scene)
 	)
 
 func on_connect_button_press() -> void:

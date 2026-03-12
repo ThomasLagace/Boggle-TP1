@@ -5,9 +5,10 @@ namespace Boggle;
 
 public class BoggleGame
 {
-    public BoggleWordsDatabase Database { get; private set; }
     public BoggleBoard Board { get; private set; }
     public int Clock { get; private set; }
+    public List<string> DiscoveredWords { get; set; }
+    private readonly BoggleWordsDatabase _database;
     public event Action? OnGameOver;
 
     public BoggleGame(BoggleWordsDatabase database, int gameDurationSeconds = 180)
@@ -40,9 +41,10 @@ public class BoggleGame
 
         BoggleUtils.RandomizeListOfDice(board);
 
-        Database = database;
+        _database = database;
         Board = new BoggleBoard(board.Select(row => row.Cast<IDie>().ToList()).ToList());
         Clock = gameDurationSeconds;
+        DiscoveredWords = [];
     }
 
     public async Task StartGame() 
@@ -61,6 +63,6 @@ public class BoggleGame
             return false;
 
         string guessString = Board.GetStringFromCoords(selectedDices);
-        return Database.ContainsWord(guessString);
+        return _database.ContainsWord(guessString);
     }
 }

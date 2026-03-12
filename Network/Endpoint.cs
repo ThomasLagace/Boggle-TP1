@@ -6,6 +6,7 @@ public enum Endpoint
     StartGame,
     ScoreUpdate,
     ReceiveMessage,
+    EndGame,
     //Serveur
     SubmitName,
     SubmitGuess

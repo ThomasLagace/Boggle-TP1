@@ -1,6 +1,6 @@
-[gd_scene format=3 uid="uid://4x1unsvjkpm0"]
+[gd_scene format=3 uid="uid://ct1a5p0ols7dl"]
 
-[ext_resource type="Script" uid="uid://bljlpwlawpksa" path="res://scripts/boggle_board_ui_scripts/boggle_button.gd" id="1_bware"]
+[ext_resource type="Script" path="res://scripts/boggle_board_ui_scripts/boggle_button.gd" id="1_bware"]
 
 [node name="BoggleButton" type="Panel" unique_id=86241367 node_paths=PackedStringArray("letter_label")]
 anchors_preset = 15

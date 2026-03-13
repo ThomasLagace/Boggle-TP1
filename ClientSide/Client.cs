@@ -2,7 +2,7 @@
 using System.Net.Sockets;
 using Boggle;
 using Network;
-using Network.Client;
+using Network.ClientRoutes;
 
 namespace ClientSide;
 
@@ -94,44 +94,44 @@ public class Client
 
         while (!_cts!.IsCancellationRequested)
         {
-            Packet<object> packet;
+            Packet packet;
             try
             {
-                packet = await NetworkUtils.ReceiveMessageAsync<object>(_socket, _cts.Token);
+                packet = await NetworkUtils.ReceivePacketAsync(_socket, _cts.Token);
             }
             catch (OperationCanceledException) { return; }
 
-            switch (packet.Endpoint)
+            switch (packet.Route)
             {
-                case Endpoint.StartGame:
-                    if (packet.Payload is StartGameEndpoint startEndpointParams)
-                        StartGameEndPoint(startEndpointParams);
+                case Route.StartGame:
+                    if (packet.RouteParams is StartGameRouteParams startRouteParams)
+                        StartGameRoute(startRouteParams);
                     break;
-                case Endpoint.ScoreUpdate:
-                    if (packet.Payload is ScoreUpdateEndpoint scoreUpdateEndpointParams)
-                        ScoreUpdateEndPoint(scoreUpdateEndpointParams);
+                case Route.ScoreUpdate:
+                    if (packet.RouteParams is ScoreUpdateRouteParams scoreUpdateRouteParams)
+                        ScoreUpdateEndPoint(scoreUpdateRouteParams);
                     break;
-                case Endpoint.ReceiveMessage:
-                    if (packet.Payload is ReceiveMessageEndpoint receiveMessageEndpointParams)
-                        ReceiveMessageEndPoint(receiveMessageEndpointParams);
+                case Route.ReceiveMessage:
+                    if (packet.RouteParams is ReceiveMessageRouteParams receiveMessageRouteParams)
+                        ReceiveMessageEndPoint(receiveMessageRouteParams);
                     break;
             }
         }
     }
 
-    private void StartGameEndPoint(StartGameEndpoint endpointParams)
+    private void StartGameRoute(StartGameRouteParams routeParams)
     {
-        BoggleBoard board = endpointParams.BoggleBoard;
-        OnGameStart?.Invoke(endpointParams.TimeEndOfGame, board);
+        BoggleBoard board = routeParams.BoggleBoard;
+        OnGameStart?.Invoke(routeParams.TimeEndOfGame, board);
     }
 
-    private void ScoreUpdateEndPoint(ScoreUpdateEndpoint endpointParams)
+    private void ScoreUpdateEndPoint(ScoreUpdateRouteParams routeParams)
     {
-        OnScoreUpdate?.Invoke(endpointParams.ClientScore, endpointParams.OpponentScore);
+        OnScoreUpdate?.Invoke(routeParams.ClientScore, routeParams.OpponentScore);
     }
 
-    private void ReceiveMessageEndPoint(ReceiveMessageEndpoint receiveMessageEndpointParams)
+    private void ReceiveMessageEndPoint(ReceiveMessageRouteParams routeParams)
     {
-        OnReceiveMessage?.Invoke(receiveMessageEndpointParams.Message);
+        OnReceiveMessage?.Invoke(routeParams.Message);
     }
 }

@@ -2,6 +2,7 @@ class_name BoggleBoardUI
 extends Control
 
 signal on_submit_guess(guess: Array[BoggleCoords])
+signal on_add_guess(guess: Array[BoggleCoords])
 
 @export var boggle_button_scene: PackedScene
 @export var boggle_button_parent: Control
@@ -34,6 +35,7 @@ func add_guess(coords: BoggleCoords) -> void:
 	if _board.AreCoordsValid(new_guess):
 		print("Adding a guess at [%d, %d]" % [coords.X, coords.Y])
 		_current_guess.assign(new_guess)
+		on_add_guess.emit(_current_guess)
 
 func get_current_word() -> String:
 	return _board.GetStringFromCoords(_current_guess)

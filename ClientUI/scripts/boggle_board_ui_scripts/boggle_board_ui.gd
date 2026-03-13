@@ -26,8 +26,11 @@ func initialize(board: BoggleBoardResource) -> void:
 			boggle_letter_parent.add_child(btn)
 
 func get_current_guess_coords() -> Array[BoggleCoords]:
-	var guess = []
-	for letter_ui in _current_guess_ui:
+	return get_coords_from_ui_guess(_current_guess_ui)
+
+func get_coords_from_ui_guess(letter_uis: Array[BoggleLetterUI]) -> Array[BoggleCoords]:
+	var guess: Array[BoggleCoords] = []
+	for letter_ui in letter_uis:
 		guess.append(letter_ui._coords)
 	return guess
 
@@ -49,10 +52,14 @@ func remove_last_guess() -> void:
 	on_modify_guess.emit(get_current_guess_coords())
 
 func add_guess(letter_ui: BoggleLetterUI) -> void:
-	var new_guess = _current_guess_ui + [letter_ui]
-	if _board.AreCoordsValid(new_guess):
+	var new_ui_guess: Array[BoggleLetterUI] = _current_guess_ui.duplicate()
+	new_ui_guess.append(letter_ui)
+
+	var new_coords_guess: Array[BoggleCoords] = get_coords_from_ui_guess(new_ui_guess)
+	
+	if _board.AreCoordsValid(new_coords_guess):
 		print("Adding a guess at [%d, %d]" % [letter_ui._coords.X, letter_ui._coords.Y])
-		_current_guess_ui.assign(new_guess)
+		_current_guess_ui.assign(new_ui_guess)
 		on_modify_guess.emit(get_current_guess_coords())
 
 func get_current_word() -> String:

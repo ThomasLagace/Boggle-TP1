@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://dalwpl7fs58kp"]
 
 [ext_resource type="Script" uid="uid://d2okef5tg4vjo" path="res://scripts/boggle_board_ui_scripts/boggle_board_ui.gd" id="1_4b8bx"]
-[ext_resource type="PackedScene" uid="uid://4x1unsvjkpm0" path="res://scenes/boggle_button.tscn" id="2_ogc3l"]
+[ext_resource type="PackedScene" path="res://scenes/boggle_letter_ui.tscn" id="2_ogc3l"]
 
-[node name="BoggleBoardUI" type="Control" unique_id=910523621 node_paths=PackedStringArray("boggle_button_parent")]
+[node name="BoggleBoardUI" type="Control" unique_id=910523621 node_paths=PackedStringArray("boggle_letter_parent")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,8 +11,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_4b8bx")
-boggle_button_scene = ExtResource("2_ogc3l")
-boggle_button_parent = NodePath("MarginContainer/GridContainer")
+boggle_letter_scene = ExtResource("2_ogc3l")
+boggle_letter_parent = NodePath("MarginContainer/GridContainer")
 
 [node name="Panel" type="Panel" parent="." unique_id=13661677]
 layout_mode = 1

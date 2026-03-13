@@ -1,4 +1,4 @@
-namespace Network.ClientRoute;
+namespace Network.ClientRoutes;
 
 public class ReceiveMessageRouteParams : RouteParams
 {

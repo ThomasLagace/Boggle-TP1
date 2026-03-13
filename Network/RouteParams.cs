@@ -1,4 +1,4 @@
-﻿using Network.ClientRoute;
+﻿using Network.ClientRoutes;
 using System.Text.Json.Serialization;
 
 namespace Network;

@@ -1,6 +1,6 @@
 using Boggle;
 
-namespace Network.ClientRoute;
+namespace Network.ClientRoutes;
 
 public class StartGameRouteParams : RouteParams
 {

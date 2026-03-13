@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using Network.Converters;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
@@ -7,9 +8,17 @@ namespace Network;
 
 public static class NetworkUtils
 {
+    public static readonly JsonSerializerOptions JsonOptions = new();
+
+    static NetworkUtils()
+    {
+        JsonOptions.Converters.Add(new IDieJsonConverter());
+        JsonOptions.Converters.Add(new BoggleBoardJsonConverter());
+    }
+
     public static async Task SendPacketAsync(Socket socket, Packet packet, CancellationToken? cts = null)
     {
-        string json = JsonSerializer.Serialize(packet);
+        string json = JsonSerializer.Serialize(packet, JsonOptions);
         byte[] messageLength = BitConverter.GetBytes(json.Length);
         byte[] messageBytes = Encoding.UTF8.GetBytes(json);
 
@@ -21,7 +30,7 @@ public static class NetworkUtils
         int lengthMessage = BitConverter.ToInt32(await ReceiveExactAsync(socket, sizeof(int), cts));
         string message = Encoding.UTF8.GetString(await ReceiveExactAsync(socket, lengthMessage, cts));
 
-        return JsonSerializer.Deserialize<Packet>(message)!;
+        return JsonSerializer.Deserialize<Packet>(message, JsonOptions)!;
     }
 
     public static async Task SendDataAsync(Socket socket, byte[] data, CancellationToken? cts = null)

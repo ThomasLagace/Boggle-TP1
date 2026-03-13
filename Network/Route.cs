@@ -1,6 +1,6 @@
 namespace Network;
 
-public enum Endpoint
+public enum Route
 {
     //Client
     StartGame,

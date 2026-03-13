@@ -1,11 +1,11 @@
-namespace Network.Client;
+namespace Network.ClientRoutes;
 
-public class ScoreUpdateEndpoint
+public class ScoreUpdateRouteParams : RouteParams
 {
     public int ClientScore { get; init; }
     public int OpponentScore { get; init; }
 
-    public ScoreUpdateEndpoint(int clientScore, int opponentScore)
+    public ScoreUpdateRouteParams(int clientScore, int opponentScore)
     {
         ClientScore = clientScore;
         OpponentScore = opponentScore;

@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using Network.Converters;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
@@ -7,21 +8,29 @@ namespace Network;
 
 public static class NetworkUtils
 {
-    public static async Task SendMessageAsync<T>(Socket socket, Packet<T> message, CancellationToken? cts = null)
+    public static readonly JsonSerializerOptions JsonOptions = new();
+
+    static NetworkUtils()
     {
-        string json = JsonSerializer.Serialize(message);
+        JsonOptions.Converters.Add(new IDieJsonConverter());
+        JsonOptions.Converters.Add(new BoggleBoardJsonConverter());
+    }
+
+    public static async Task SendPacketAsync(Socket socket, Packet packet, CancellationToken? cts = null)
+    {
+        string json = JsonSerializer.Serialize(packet, JsonOptions);
         byte[] messageLength = BitConverter.GetBytes(json.Length);
         byte[] messageBytes = Encoding.UTF8.GetBytes(json);
 
         await SendDataAsync(socket, [.. messageLength, .. messageBytes], cts);
     }
 
-    public static async Task<Packet<T>> ReceiveMessageAsync<T>(Socket socket, CancellationToken? cts = null)
+    public static async Task<Packet> ReceivePacketAsync(Socket socket, CancellationToken? cts = null)
     {
         int lengthMessage = BitConverter.ToInt32(await ReceiveExactAsync(socket, sizeof(int), cts));
         string message = Encoding.UTF8.GetString(await ReceiveExactAsync(socket, lengthMessage, cts));
 
-        return JsonSerializer.Deserialize<Packet<T>>(message)!;
+        return JsonSerializer.Deserialize<Packet>(message, JsonOptions)!;
     }
 
     public static async Task SendDataAsync(Socket socket, byte[] data, CancellationToken? cts = null)

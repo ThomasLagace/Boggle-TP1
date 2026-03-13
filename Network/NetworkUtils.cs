@@ -7,21 +7,21 @@ namespace Network;
 
 public static class NetworkUtils
 {
-    public static async Task SendMessageAsync<T>(Socket socket, Packet<T> message, CancellationToken? cts = null)
+    public static async Task SendPacketAsync(Socket socket, Packet packet, CancellationToken? cts = null)
     {
-        string json = JsonSerializer.Serialize(message);
+        string json = JsonSerializer.Serialize(packet);
         byte[] messageLength = BitConverter.GetBytes(json.Length);
         byte[] messageBytes = Encoding.UTF8.GetBytes(json);
 
         await SendDataAsync(socket, [.. messageLength, .. messageBytes], cts);
     }
 
-    public static async Task<Packet<T>> ReceiveMessageAsync<T>(Socket socket, CancellationToken? cts = null)
+    public static async Task<Packet> ReceivePacketAsync(Socket socket, CancellationToken? cts = null)
     {
         int lengthMessage = BitConverter.ToInt32(await ReceiveExactAsync(socket, sizeof(int), cts));
         string message = Encoding.UTF8.GetString(await ReceiveExactAsync(socket, lengthMessage, cts));
 
-        return JsonSerializer.Deserialize<Packet<T>>(message)!;
+        return JsonSerializer.Deserialize<Packet>(message)!;
     }
 
     public static async Task SendDataAsync(Socket socket, byte[] data, CancellationToken? cts = null)

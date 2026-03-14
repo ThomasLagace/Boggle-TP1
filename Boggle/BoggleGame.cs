@@ -1,11 +1,18 @@
-﻿namespace Boggle;
+﻿using System.Diagnostics;
+using System.Threading.Tasks;
+
+namespace Boggle;
 
 public class BoggleGame
 {
-    public BoggleWordsDatabase Database { get; private set; }
     public BoggleBoard Board { get; private set; }
+    public DateTimeOffset GameEndTime { get; init; }
+    public Dictionary<string, BogglePlayer> DiscoveredWords { get; set; }
+    public CancellationTokenSource GameCts { get; init; }
+    public event Action? OnGameOver;
+    private readonly BoggleWordsDatabase _database;
 
-    public BoggleGame(BoggleWordsDatabase database)
+    public BoggleGame(BoggleWordsDatabase database, DateTimeOffset gameEndTime)
     {
         List<List<string>> dice =
         [
@@ -35,9 +42,26 @@ public class BoggleGame
 
         BoggleUtils.RandomizeListOfDice(board);
 
-
-        Database = database;
+        _database = database;
         Board = new BoggleBoard(board.Select(row => row.Cast<IDie>().ToList()).ToList());
+        GameEndTime = gameEndTime;
+        DiscoveredWords = [];
+        GameCts = new CancellationTokenSource();
+    }
+
+    public BoggleGame(BoggleWordsDatabase database) : this(database, DateTimeOffset.Now + TimeSpan.FromMinutes(3)) { }
+
+    public async Task StartGame(CancellationToken token) 
+    {
+        TimeSpan duration = GameEndTime - DateTimeOffset.Now;
+
+        if (duration > TimeSpan.Zero) 
+        {
+            await Task.Delay(duration, token);
+        }
+
+        GameCts.Cancel();
+        this.OnGameOver?.Invoke();
     }
 
     public bool ValidateGuess(List<(int, int)> selectedDices)
@@ -46,6 +70,6 @@ public class BoggleGame
             return false;
 
         string guessString = Board.GetStringFromCoords(selectedDices);
-        return Database.ContainsWord(guessString);
+        return _database.ContainsWord(guessString);
     }
 }

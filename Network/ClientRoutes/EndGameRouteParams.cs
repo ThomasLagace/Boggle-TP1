@@ -9,12 +9,13 @@ namespace Network.ClientRoutes
 {
     public class EndGameRouteParams : RouteParams
     {
-        // Nullable to handle tie
-        public BogglePlayer? Winner { get; init; }
+        public int Player1Score { get; init; }
+        public int Player2Score { get; init; }
 
-        public EndGameRouteParams(BogglePlayer? winner)
+        public EndGameRouteParams(int player1Score, int player2Score)
         {
-            Winner = winner;
+            Player1Score = player1Score;
+            Player2Score = player2Score;
         }
     }
 }

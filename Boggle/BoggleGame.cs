@@ -65,12 +65,4 @@ public class BoggleGame
         string guessString = Board.GetStringFromCoords(selectedDices);
         return _database.ContainsWord(guessString);
     }
-
-    public static BogglePlayer? GetWinner(BogglePlayer player1, BogglePlayer player2) 
-    {
-        if (player1.Score > player2.Score) return player1;
-        if (player2.Score > player1.Score) return player2;
-
-        return null;
-    }
 }

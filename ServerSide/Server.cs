@@ -70,7 +70,7 @@ namespace ServerSide
                         BogglePlayer player1 = _clients[socketPlayer1];
                         BogglePlayer player2 = _clients[socketPlayer2];
 
-                        EndGameRouteParams endGameParams = new(BoggleGame.GetWinner(player1, player2));
+                        EndGameRouteParams endGameParams = new(player1.Score, player2.Score);
                         Packet endGamePacket = new(Route.EndGame, endGameParams);
 
                         await Task.WhenAll(

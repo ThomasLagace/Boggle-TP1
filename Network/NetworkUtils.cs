@@ -8,7 +8,10 @@ namespace Network;
 
 public static class NetworkUtils
 {
-    public static readonly JsonSerializerOptions JsonOptions = new();
+    public static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        IncludeFields = true,
+    };
 
     static NetworkUtils()
     {

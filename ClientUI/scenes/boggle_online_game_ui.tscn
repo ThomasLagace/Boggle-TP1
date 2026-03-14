@@ -13,7 +13,7 @@ grow_vertical = 2
 script = ExtResource("1_yrg4u")
 timer_label = NodePath("TimeLeftLabel")
 boggle_board_ui = NodePath("MarginContainer/BoggleBoardUI")
-submit_button = NodePath("SubmitButton")
+submit_button = NodePath("")
 client_score_label = NodePath("ClientScoreLabel")
 opponent_score_label = NodePath("OpponentScoreLabel")
 
@@ -40,14 +40,6 @@ offset_right = 83.0
 offset_bottom = 46.0
 text = "5:00"
 horizontal_alignment = 1
-
-[node name="SubmitButton" type="Button" parent="." unique_id=55704702]
-layout_mode = 0
-offset_left = 31.0
-offset_top = 574.0
-offset_right = 143.0
-offset_bottom = 605.0
-text = "Submit guess"
 
 [node name="ClientScoreLabel" type="Label" parent="." unique_id=1136568849]
 layout_mode = 0

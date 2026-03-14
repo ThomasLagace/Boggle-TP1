@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using Boggle;
 using Network;
 using Network.ClientRoutes;
+using Network.ServerRoutes;
 
 namespace ClientSide;
 
@@ -87,6 +88,13 @@ public class Client
         _socket.Close();
 
         OnLogging?.Invoke("Disconnected from server.", LoggingSeverity.Info);
+    }
+
+    public async Task SubmitGuessToServerAsync(List<(int, int)> guess)
+    {
+        SubmitGuessRouteParams routeParams = new(guess);
+        Packet packet = new(Route.SubmitGuess, routeParams);
+        await NetworkUtils.SendPacketAsync(_socket, packet, _cts?.Token);
     }
 
     private async Task ListenAsync()

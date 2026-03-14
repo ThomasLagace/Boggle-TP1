@@ -3,7 +3,8 @@ extends Control
 
 signal on_submit_guess(guess: Array[BoggleCoords])
 signal on_modify_guess(guess: Array[BoggleCoords])
-signal on_guess_canceled()
+signal on_started_guess()
+signal on_ended_guess()
 
 @export var boggle_letter_scene: PackedScene
 @export var boggle_letter_parent: Control
@@ -56,13 +57,14 @@ func submit_guess() -> void:
 			clear_guess()
 			return
 	on_submit_guess.emit(get_current_guess_coords())
+	on_ended_guess.emit()
 	_current_guess_ui = []
 	line_2d_guess.clear_points()
 
 func clear_guess() -> void:
 	_current_guess_ui.clear()
 	on_modify_guess.emit(get_current_guess_coords())
-	on_guess_canceled.emit()
+	on_ended_guess.emit()
 	line_2d_guess.clear_points()
 
 func remove_last_guess() -> void:
@@ -83,6 +85,8 @@ func add_guess(letter_ui: BoggleLetterUI) -> void:
 		on_modify_guess.emit(get_current_guess_coords())
 
 		line_2d_guess.add_point(letter_ui.global_position + letter_ui.size * 0.5)
+		if len(new_ui_guess) == 1:
+			on_started_guess.emit()
 
 func get_current_word() -> String:
 	return _board.GetStringFromCoords(get_current_guess_coords())

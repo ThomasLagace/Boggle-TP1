@@ -2,8 +2,57 @@
 
 [ext_resource type="Script" uid="uid://cldqnocdi0r44" path="res://scripts/boggle_local/boggle_game_ui.gd" id="1_jqj7l"]
 [ext_resource type="PackedScene" uid="uid://dalwpl7fs58kp" path="res://scenes/boggle_board_ui.tscn" id="2_0au77"]
+[ext_resource type="PackedScene" uid="uid://bv6xooffrxoql" path="res://scenes/cancel_area.tscn" id="3_re2t1"]
 
-[node name="BoggleGameUi" type="Control" unique_id=1019244804 node_paths=PackedStringArray("boggle_board_ui", "submit_button", "current_guess_label")]
+[sub_resource type="Animation" id="Animation_re2t1"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CancelAreaMargin1:position:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [-250.0]
+}
+
+[sub_resource type="Animation" id="Animation_6fgy4"]
+resource_name = "started_guess_animation"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CancelAreaMargin1:position:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(0.287, 1),
+"update": 0,
+"values": [-250.0, 0.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CancelAreaMargin2:position:x")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(0.287, 1),
+"update": 0,
+"values": [1152.0, 902.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_axbh4"]
+_data = {
+&"RESET": SubResource("Animation_re2t1"),
+&"started_guess_animation": SubResource("Animation_6fgy4")
+}
+
+[node name="BoggleGameUi" type="Control" unique_id=1019244804 node_paths=PackedStringArray("boggle_board_ui", "current_guess_label")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -12,32 +61,35 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_jqj7l")
 boggle_board_ui = NodePath("BoggleBoardUI")
-submit_button = NodePath("SubmitButton")
 current_guess_label = NodePath("CurrentWordLabel")
 
 [node name="BoggleBoardUI" parent="." unique_id=793989032 node_paths=PackedStringArray("cancel_guess_area") instance=ExtResource("2_0au77")]
 layout_mode = 1
-cancel_guess_area = [NodePath("../CancelArea")]
-
-[node name="SubmitButton" type="Button" parent="." unique_id=181134456]
-layout_mode = 0
-offset_left = 998.0
-offset_top = 560.0
-offset_right = 1061.0
-offset_bottom = 591.0
-text = "Submit"
+cancel_guess_area = [NodePath("../CancelAreaMargin1"), NodePath("../CancelAreaMargin2")]
 
 [node name="CurrentWordLabel" type="Label" parent="." unique_id=1273988280]
 layout_mode = 0
-offset_left = 46.0
-offset_top = 73.0
-offset_right = 86.0
-offset_bottom = 96.0
+offset_left = 514.0
+offset_top = 11.0
+offset_right = 616.0
+offset_bottom = 34.0
 text = "CurrentWord"
 
-[node name="CancelArea" type="Panel" parent="." unique_id=247454236]
+[node name="CancelAreaMargin1" parent="." unique_id=449734565 instance=ExtResource("3_re2t1")]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.21700001
+anchor_right = -0.21700001
+offset_left = -0.015991211
+offset_right = 249.98401
+
+[node name="CancelAreaMargin2" parent="." unique_id=455521002 instance=ExtResource("3_re2t1")]
 layout_mode = 0
-offset_left = 948.0
-offset_top = 146.0
-offset_right = 1060.0
-offset_bottom = 283.0
+offset_left = 1152.0
+offset_right = 1402.0
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=899755148]
+libraries/ = SubResource("AnimationLibrary_axbh4")
+
+[connection signal="on_ended_guess" from="BoggleBoardUI" to="AnimationPlayer" method="play_backwards" binds= [&"started_guess_animation"]]
+[connection signal="on_started_guess" from="BoggleBoardUI" to="AnimationPlayer" method="play" binds= [&"started_guess_animation"]]

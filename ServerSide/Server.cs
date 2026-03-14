@@ -76,13 +76,16 @@ namespace ServerSide
                         HandleGameplayAsync(socketPlayer2)
                     );
 
-                    StartGameRouteParams startGameParams = new(DateTimeOffset.Now, queuedMatch.Board); // placeholder date value -- will be replaced shortly
-                    Packet startGamePacket = new(Route.StartGame, startGameParams);
+                    StartGameRouteParams startGameParams1 = new(DateTimeOffset.Now, queuedMatch.Board, player2.Name); // placeholder date value -- will be replaced shortly
+                    StartGameRouteParams startGameParams2 = new(DateTimeOffset.Now, queuedMatch.Board, player1.Name);
+
+                    Packet startGamePacket1 = new(Route.StartGame, startGameParams1);
+                    Packet startGamePacket2 = new(Route.StartGame, startGameParams2);
 
                     // Start match clock + notify clients
                     await Task.WhenAll(
-                        NetworkUtils.SendPacketAsync(socketPlayer1, startGamePacket, _cts.Token),
-                        NetworkUtils.SendPacketAsync(socketPlayer2, startGamePacket, _cts.Token),
+                        NetworkUtils.SendPacketAsync(socketPlayer1, startGamePacket1, _cts.Token),
+                        NetworkUtils.SendPacketAsync(socketPlayer2, startGamePacket2, _cts.Token),
                         queuedMatch.StartGame()
                     );
 

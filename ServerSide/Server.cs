@@ -5,6 +5,7 @@ using Network.ServerRoutes;
 using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
+using System.Numerics;
 
 namespace ServerSide
 {
@@ -49,6 +50,27 @@ namespace ServerSide
                     Socket socketPlayer2 = await Socket.AcceptAsync(_cts.Token);
                     await RegisterPlayerAsync(socketPlayer2, queuedMatch);
 
+                    BogglePlayer player1 = _clients[socketPlayer1];
+                    BogglePlayer player2 = _clients[socketPlayer2];
+
+                    // Notify client 1 when its score updates
+                    player1.OnScoreUpdate += () =>
+                    {
+                        ScoreUpdateRouteParams scoreParams = new(player1.Score, player2.Score);
+                        Packet scorePacket = new(Route.ScoreUpdate, scoreParams);
+
+                        _ = NetworkUtils.SendPacketAsync(socketPlayer1, scorePacket, _cts.Token);
+                    };
+
+                    // Notify client 2 when its score updates
+                    player2.OnScoreUpdate += () =>
+                    {
+                        ScoreUpdateRouteParams scoreParams = new(player2.Score, player1.Score);
+                        Packet scorePacket = new(Route.ScoreUpdate, scoreParams);
+
+                        _ = NetworkUtils.SendPacketAsync(socketPlayer2, scorePacket, _cts.Token);
+                    };
+
                     await Task.WhenAll(
                         HandleGameplayAsync(socketPlayer1),
                         HandleGameplayAsync(socketPlayer2)
@@ -67,9 +89,6 @@ namespace ServerSide
                     // End match handling when clock runs out + notify clients
                     queuedMatch.OnGameOver += async () =>
                     {
-                        BogglePlayer player1 = _clients[socketPlayer1];
-                        BogglePlayer player2 = _clients[socketPlayer2];
-
                         EndGameRouteParams endGameParams = new(player1.Score, player2.Score);
                         Packet endGamePacket = new(Route.EndGame, endGameParams);
 
@@ -162,17 +181,7 @@ namespace ServerSide
             string name = nameParams.Name;
             BogglePlayer player = new BogglePlayer(name, match);
 
-            if (_clients.TryAdd(playerSocket, player))
-            {
-                // Notify client when its score updates
-                player.OnScoreUpdate += () =>
-                {
-                    ScoreUpdateRouteParams scoreParams = new(player.Score);
-                    Packet scorePacket = new(Route.ScoreUpdate, scoreParams);
-
-                    _ = NetworkUtils.SendPacketAsync(playerSocket, scorePacket, _cts.Token);
-                };
-            }
+            _clients.TryAdd(playerSocket, player);
         }
     }
 }

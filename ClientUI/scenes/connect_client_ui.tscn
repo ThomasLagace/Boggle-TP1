@@ -1,0 +1,59 @@
+[gd_scene format=3 uid="uid://doidx1hat37mv"]
+
+[ext_resource type="Script" uid="uid://bdbnucsg0wycg" path="res://scripts/boggle_online/connect_client_ui.gd" id="1_yehkq"]
+[ext_resource type="PackedScene" uid="uid://b7276br67b2wa" path="res://scenes/boggle_online_game_ui.tscn" id="2_ycm1s"]
+
+[node name="ConnectClientUI" type="Control" unique_id=1591821689]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_yehkq")
+on_connect_scene = ExtResource("2_ycm1s")
+
+[node name="BackgroundPanel" type="Panel" parent="." unique_id=1703329964]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ConnectionInformation" type="VBoxContainer" parent="." unique_id=761872281]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="NameLabel" type="Label" parent="ConnectionInformation" unique_id=247648169]
+layout_mode = 2
+text = "Votre username:"
+
+[node name="NameEdit" type="LineEdit" parent="ConnectionInformation" unique_id=1431602173]
+layout_mode = 2
+
+[node name="AddressLabel" type="Label" parent="ConnectionInformation" unique_id=253645270]
+layout_mode = 2
+text = "Adresse IP du serveur:"
+
+[node name="AddressEdit" type="LineEdit" parent="ConnectionInformation" unique_id=1102099429]
+layout_mode = 2
+text = "127.0.0.1"
+
+[node name="PortLabel" type="Label" parent="ConnectionInformation" unique_id=1182674153]
+layout_mode = 2
+text = "Port du serveur:"
+
+[node name="PortEdit" type="LineEdit" parent="ConnectionInformation" unique_id=1441687583]
+layout_mode = 2
+text = "12345"
+
+[node name="ConnectButton" type="Button" parent="ConnectionInformation" unique_id=352944982]
+layout_mode = 2
+text = "Se connecter"

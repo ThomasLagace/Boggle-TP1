@@ -23,9 +23,10 @@ public class Client
 
     public event Action<string, LoggingSeverity>? OnLogging;
 
-    public event Action<DateTimeOffset, BoggleBoard>? OnGameStart;
-    public event Action<int, int>? OnScoreUpdate;
+    public event Action<int, int>? OnEndGame;
     public event Action<string>? OnReceiveMessage;
+    public event Action<int, int>? OnScoreUpdate;
+    public event Action<DateTimeOffset, BoggleBoard>? OnGameStart;
 
     public Client(IPEndPoint ip)
     {
@@ -103,35 +104,44 @@ public class Client
 
             switch (packet.Route)
             {
+                case Route.EndGame:
+                    if (packet.RouteParams is EndGameRouteParams endGameRouteParams)
+                        EndGameRoute(endGameRouteParams);
+                    break;
+                case Route.ReceiveMessage:
+                    if (packet.RouteParams is ReceiveMessageRouteParams receiveMessageRouteParams)
+                        ReceiveMessageRoute(receiveMessageRouteParams);
+                    break;
+                case Route.ScoreUpdate:
+                    if (packet.RouteParams is ScoreUpdateRouteParams scoreUpdateRouteParams)
+                        ScoreUpdateRoute(scoreUpdateRouteParams);
+                    break;
                 case Route.StartGame:
                     if (packet.RouteParams is StartGameRouteParams startRouteParams)
                         StartGameRoute(startRouteParams);
                     break;
-                case Route.ScoreUpdate:
-                    if (packet.RouteParams is ScoreUpdateRouteParams scoreUpdateRouteParams)
-                        ScoreUpdateEndPoint(scoreUpdateRouteParams);
-                    break;
-                case Route.ReceiveMessage:
-                    if (packet.RouteParams is ReceiveMessageRouteParams receiveMessageRouteParams)
-                        ReceiveMessageEndPoint(receiveMessageRouteParams);
-                    break;
             }
         }
+    }
+
+    private void EndGameRoute(EndGameRouteParams routeParams)
+    {
+        OnEndGame?.Invoke(routeParams.ClientScore, routeParams.OpponentScore);
+    }
+
+    private void ReceiveMessageRoute(ReceiveMessageRouteParams routeParams)
+    {
+        OnReceiveMessage?.Invoke(routeParams.Message);
+    }
+
+    private void ScoreUpdateRoute(ScoreUpdateRouteParams routeParams)
+    {
+        OnScoreUpdate?.Invoke(routeParams.ClientScore, routeParams.OpponentScore);
     }
 
     private void StartGameRoute(StartGameRouteParams routeParams)
     {
         BoggleBoard board = routeParams.BoggleBoard;
         OnGameStart?.Invoke(routeParams.TimeEndOfGame, board);
-    }
-
-    private void ScoreUpdateEndPoint(ScoreUpdateRouteParams routeParams)
-    {
-        OnScoreUpdate?.Invoke(routeParams.ClientScore, routeParams.OpponentScore);
-    }
-
-    private void ReceiveMessageEndPoint(ReceiveMessageRouteParams routeParams)
-    {
-        OnReceiveMessage?.Invoke(routeParams.Message);
     }
 }

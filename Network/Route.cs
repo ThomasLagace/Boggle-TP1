@@ -6,6 +6,7 @@ public enum Route
     StartGame,
     ScoreUpdate,
     ReceiveMessage,
+    EndGame,
     //Serveur
     SubmitName,
     SubmitGuess

@@ -1,5 +1,7 @@
 ﻿using Boggle;
 using Network;
+using Network.ClientRoutes;
+using Network.ServerRoutes;
 using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
@@ -52,23 +54,28 @@ namespace ServerSide
                         HandleGameplayAsync(socketPlayer2)
                     );
 
-                    Packet<BoggleGame> startGamePacket = new(Network.Endpoint.StartGame, queuedMatch);
+                    StartGameRouteParams startGameParams = new(DateTimeOffset.Now, queuedMatch.Board); // placeholder date value -- will be replaced shortly
+                    Packet startGamePacket = new(Route.StartGame, startGameParams);
 
                     // Start match clock + notify clients
                     await Task.WhenAll(
-                        NetworkUtils.SendMessageAsync(socketPlayer1, startGamePacket, _cts.Token),
-                        NetworkUtils.SendMessageAsync(socketPlayer2, startGamePacket, _cts.Token),
+                        NetworkUtils.SendPacketAsync(socketPlayer1, startGamePacket, _cts.Token),
+                        NetworkUtils.SendPacketAsync(socketPlayer2, startGamePacket, _cts.Token),
                         queuedMatch.StartGame()
                     );
 
                     // End match handling when clock runs out + notify clients
                     queuedMatch.OnGameOver += async () =>
                     {
-                        Packet<BoggleGame> endGamePacket = new(Network.Endpoint.EndGame, queuedMatch);
+                        BogglePlayer player1 = _clients[socketPlayer1];
+                        BogglePlayer player2 = _clients[socketPlayer2];
+
+                        EndGameRouteParams endGameParams = new(BoggleGame.GetWinner(player1, player2));
+                        Packet endGamePacket = new(Route.EndGame, endGameParams);
 
                         await Task.WhenAll(
-                            NetworkUtils.SendMessageAsync(socketPlayer1, endGamePacket, _cts.Token),
-                            NetworkUtils.SendMessageAsync(socketPlayer2, endGamePacket, _cts.Token)
+                            NetworkUtils.SendPacketAsync(socketPlayer1, endGamePacket, _cts.Token),
+                            NetworkUtils.SendPacketAsync(socketPlayer2, endGamePacket, _cts.Token)
                         );
 
                         _cts.Cancel();
@@ -93,11 +100,11 @@ namespace ServerSide
                 {
                     try 
                     {
-                        Packet<List<(int, int)>> packet = await NetworkUtils.ReceiveMessageAsync<List<(int, int)>>(playerSocket, _cts.Token);
+                        Packet guessPacket = await NetworkUtils.ReceivePacketAsync(playerSocket, _cts.Token);
 
-                        if (packet.Endpoint != Network.Endpoint.SubmitGuess) continue;
+                        if (guessPacket.RouteParams is not SubmitGuessRouteParams guessParams) continue;
 
-                        List<(int, int)> guess = packet.Payload;
+                        List<(int, int)> guess = guessParams.Guess;
 
                         if (!player.Match.ValidateGuess(guess)) continue;
 
@@ -106,9 +113,10 @@ namespace ServerSide
                         // Limit double guesses + notify client
                         if (player.Guesses.Contains(word))
                         {
-                            Packet<string> dupeGuessPacket = new(Network.Endpoint.ReceiveMessage, Warning.DuplicateGuess);
+                            ReceiveMessageRouteParams warningParams = new(Warning.DuplicateGuess);
+                            Packet dupeGuessPacket = new(Route.ReceiveMessage, warningParams);
 
-                            await NetworkUtils.SendMessageAsync(playerSocket, dupeGuessPacket, _cts.Token);
+                            await NetworkUtils.SendPacketAsync(playerSocket, dupeGuessPacket, _cts.Token);
 
                             continue;
                         }
@@ -122,11 +130,12 @@ namespace ServerSide
                         {
                             if (_clients.TryGetKey(opponent, out Socket opponentSocket)) 
                             {
-                                Packet<string> sharedGuessPacket = new(Network.Endpoint.ReceiveMessage, Warning.SharedGuess(word));
+                                ReceiveMessageRouteParams warningParams = new(Warning.SharedGuess(word));
+                                Packet sharedGuessPacket = new(Route.ReceiveMessage, warningParams);
 
                                 await Task.WhenAll(
-                                    NetworkUtils.SendMessageAsync(playerSocket, sharedGuessPacket, _cts.Token),
-                                    NetworkUtils.SendMessageAsync(opponentSocket, sharedGuessPacket, _cts.Token)
+                                    NetworkUtils.SendPacketAsync(playerSocket, sharedGuessPacket, _cts.Token),
+                                    NetworkUtils.SendPacketAsync(opponentSocket, sharedGuessPacket, _cts.Token)
                                 );
                             }
 
@@ -146,17 +155,22 @@ namespace ServerSide
         private async Task RegisterPlayerAsync(Socket playerSocket, BoggleGame match) 
         {
             // Listen for player name
-            Packet<string> name = await NetworkUtils.ReceiveMessageAsync<string>(playerSocket, _cts.Token);
-            BogglePlayer player = new BogglePlayer(name.Payload, match);
+            Packet namePacket = await NetworkUtils.ReceivePacketAsync(playerSocket, _cts.Token);
 
-            if (_clients.TryAdd(playerSocket, player)) 
+            if (namePacket.RouteParams is not SubmitNameRouteParams nameParams) return;
+
+            string name = nameParams.Name;
+            BogglePlayer player = new BogglePlayer(name, match);
+
+            if (_clients.TryAdd(playerSocket, player))
             {
                 // Notify client when its score updates
                 player.OnScoreUpdate += () =>
                 {
-                    Packet<BogglePlayer> scorePacket = new(Network.Endpoint.ScoreUpdate, player);
+                    ScoreUpdateRouteParams scoreParams = new(player.Score);
+                    Packet scorePacket = new(Route.ScoreUpdate, scoreParams);
 
-                    _ = NetworkUtils.SendMessageAsync(playerSocket, scorePacket, _cts.Token);
+                    _ = NetworkUtils.SendPacketAsync(playerSocket, scorePacket, _cts.Token);
                 };
             }
         }

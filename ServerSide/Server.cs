@@ -73,11 +73,6 @@ namespace ServerSide
                         _ = NetworkUtils.SendPacketAsync(socketPlayer2, scorePacket, _cts.Token);
                     };
 
-                    await Task.WhenAll(
-                        HandleGameplayAsync(socketPlayer1, queuedMatch.GameCts),
-                        HandleGameplayAsync(socketPlayer2, queuedMatch.GameCts)
-                    );
-
                     StartGameRouteParams startGameParams1 = new(queuedMatch.GameEndTime, queuedMatch.Board, player2.Name);
                     StartGameRouteParams startGameParams2 = new(queuedMatch.GameEndTime, queuedMatch.Board, player1.Name);
 
@@ -105,20 +100,44 @@ namespace ServerSide
                             NetworkUtils.SendPacketAsync(socketPlayer2, endGamePacket2, _cts.Token)
                         );
                     };
+
+                    await Task.WhenAll(
+                        HandleGameplayAsync(socketPlayer1, queuedMatch.GameCts),
+                        HandleGameplayAsync(socketPlayer2, queuedMatch.GameCts)
+                    );
                 }
-                catch (SocketException ex) when (ex.SocketErrorCode == SocketError.Interrupted)
-                {
-                    break;
-                }
+                catch (SocketException ex) when (ex.SocketErrorCode == SocketError.ConnectionReset) { break; }
+                catch (SocketException ex) when (ex.SocketErrorCode == SocketError.Interrupted) { break; }
                 catch (OperationCanceledException) { }
             }
+
+            await ShutdownAsync();
+        }
+
+        public async Task ShutdownAsync()
+        {
+            // Notify clients of shutdown
+            foreach (var client in _clients) 
+            {
+                try
+                {
+                    ReceiveMessageRouteParams connectionErrorParams = new(Warning.ConnectionLost);
+                    Packet connectionErrorPacket = new(Route.ReceiveMessage, connectionErrorParams);
+
+                    await NetworkUtils.SendPacketAsync(client.Key, connectionErrorPacket);
+                }
+                catch (SocketException ex) when (ex.SocketErrorCode == SocketError.ConnectionReset) { }
+            }
+
+            _cts.Cancel();
+
+            Socket.Shutdown(SocketShutdown.Both);
+            Socket.Close();
         }
 
         private async Task HandleGameplayAsync(Socket playerSocket, CancellationTokenSource gameCts)
         {
-            BogglePlayer player;
-
-            if (_clients.TryGetValue(playerSocket, out player!)) 
+            if (_clients.TryGetValue(playerSocket, out BogglePlayer player)) 
             {
                 // Listen for guesses until game ends
                 while (!gameCts.IsCancellationRequested)
@@ -171,7 +190,8 @@ namespace ServerSide
 
                         player.Match.DiscoveredWords.Add(word, player);
                         player.Score += points;
-                    } 
+                    }
+                    catch (SocketException ex) when (ex.SocketErrorCode == SocketError.ConnectionReset) { return; }
                     catch (OperationCanceledException) { return; }
                 }
             }
@@ -179,15 +199,19 @@ namespace ServerSide
 
         private async Task RegisterPlayerAsync(Socket playerSocket, BoggleGame match) 
         {
-            // Listen for player name
-            Packet namePacket = await NetworkUtils.ReceivePacketAsync(playerSocket, _cts.Token);
+            try
+            {
+                // Listen for player name
+                Packet namePacket = await NetworkUtils.ReceivePacketAsync(playerSocket, _cts.Token); 
+                
+                if (namePacket.RouteParams is not SubmitNameRouteParams nameParams) return;
 
-            if (namePacket.RouteParams is not SubmitNameRouteParams nameParams) return;
+                string name = nameParams.Name;
+                BogglePlayer player = new BogglePlayer(name, match);
 
-            string name = nameParams.Name;
-            BogglePlayer player = new BogglePlayer(name, match);
-
-            _clients.TryAdd(playerSocket, player);
+                _clients.TryAdd(playerSocket, player);
+            }
+            catch (SocketException ex) when (ex.SocketErrorCode == SocketError.ConnectionReset) { return; }
         }
     }
 }

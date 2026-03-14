@@ -4,6 +4,8 @@ signal on_client_connect()
 signal on_client_intialized(client: BoggleClientNode)
 
 var client: BoggleClientNode = null
+var client_name: String
+var opponent_name: String
 
 func create_client(ip: String, port: String) -> bool:
 	if client != null:

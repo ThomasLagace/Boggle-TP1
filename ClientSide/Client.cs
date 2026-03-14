@@ -27,7 +27,7 @@ public class Client
     public event Action<int, int>? OnEndGame;
     public event Action<string>? OnReceiveMessage;
     public event Action<int, int>? OnScoreUpdate;
-    public event Action<DateTimeOffset, BoggleBoard>? OnGameStart;
+    public event Action<DateTimeOffset, BoggleBoard, string>? OnGameStart;
 
     public Client(IPEndPoint ip)
     {
@@ -157,6 +157,6 @@ public class Client
     private void StartGameRoute(StartGameRouteParams routeParams)
     {
         BoggleBoard board = routeParams.BoggleBoard;
-        OnGameStart?.Invoke(routeParams.TimeEndOfGame, board);
+        OnGameStart?.Invoke(routeParams.TimeEndOfGame, board, routeParams.OpponentName);
     }
 }

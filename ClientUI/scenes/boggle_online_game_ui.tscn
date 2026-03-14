@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://crio4w3fi8n11" path="res://scripts/boggle_online/boggle_online_ui.gd" id="1_yrg4u"]
 [ext_resource type="PackedScene" uid="uid://dalwpl7fs58kp" path="res://scenes/boggle_board_ui.tscn" id="2_4vr5w"]
 
-[node name="BoggleOnlineGameUI" type="Control" unique_id=140386652 node_paths=PackedStringArray("timer_label", "boggle_board_ui", "submit_button", "client_score_label", "opponent_score_label")]
+[node name="BoggleOnlineGameUI" type="Control" unique_id=140386652 node_paths=PackedStringArray("timer_label", "boggle_board_ui", "client_score_label", "opponent_score_label", "opponent_name_label")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -13,9 +13,9 @@ grow_vertical = 2
 script = ExtResource("1_yrg4u")
 timer_label = NodePath("TimeLeftLabel")
 boggle_board_ui = NodePath("MarginContainer/BoggleBoardUI")
-submit_button = NodePath("")
 client_score_label = NodePath("ClientScoreLabel")
 opponent_score_label = NodePath("OpponentScoreLabel")
+opponent_name_label = NodePath("Label")
 
 [node name="MarginContainer" type="MarginContainer" parent="." unique_id=173087912]
 layout_mode = 1

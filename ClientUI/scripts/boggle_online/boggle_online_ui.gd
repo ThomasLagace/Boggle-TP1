@@ -31,6 +31,7 @@ func on_game_start(endtime: int, opponent_name: String) -> void:
 
 func on_submit_guess(guess: Array[BoggleCoords]) -> void:
 	print("A the guess \"%s\" was submited." % [_client.GetBoggleBoard().GetStringFromCoords(guess)])
+	_client.SubmitGuessToServer(guess)
 
 func on_score_update(client_score: int, opponent_score: int) -> void:
 	client_score_label.text = str(client_score)

@@ -3,6 +3,7 @@ using ClientSide;
 using Godot;
 using Network;
 using System;
+using System.Collections.Generic;
 using System.Net;
 
 [GlobalClass]
@@ -48,6 +49,17 @@ public partial class BoggleClientNode : Node
         {
             EmitSignal(SignalName.OnReceiveMessage, message);
         };
+    }
+
+    public void SubmitGuessToServer(Godot.Collections.Array<BoggleCoords> boggleCoords)
+    {
+        List<(int, int)> guess = GodotUtils.ConvertBoggleCoordsToTuple(boggleCoords);
+        _ = _client.SubmitGuessToServerAsync(guess);
+    }
+
+    public void SubmitNameToServer(string name)
+    {
+        _ = _client.SubmitNameToServerAsync(name);
     }
 
     public async void ConnectAsync(Callable onConnectionCallback)

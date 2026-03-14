@@ -1,13 +1,13 @@
 namespace Network;
 
-public class Packet<T>
+public class Packet
 {
-    public Endpoint Endpoint { get; init; }
-    public T Payload { get; init; }
+    public Route Route { get; init; }
+    public RouteParams RouteParams { get; init; }
 
-    public Packet(Endpoint endpoint, T payload)
+    public Packet(Route route, RouteParams routeParams)
     {
-        this.Endpoint = endpoint;
-        this.Payload = payload;
+        this.Route = route;
+        this.RouteParams = routeParams;
     }
 }

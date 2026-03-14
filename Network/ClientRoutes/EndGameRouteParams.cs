@@ -9,13 +9,13 @@ namespace Network.ClientRoutes
 {
     public class EndGameRouteParams : RouteParams
     {
-        public int Player1Score { get; init; }
-        public int Player2Score { get; init; }
+        public int ClientScore { get; init; }
+        public int OpponentScore { get; init; }
 
-        public EndGameRouteParams(int player1Score, int player2Score)
+        public EndGameRouteParams(int clientScore, int opponentScore)
         {
-            Player1Score = player1Score;
-            Player2Score = player2Score;
+            ClientScore = clientScore;
+            OpponentScore = opponentScore;
         }
     }
 }

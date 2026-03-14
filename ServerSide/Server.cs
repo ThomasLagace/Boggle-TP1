@@ -89,12 +89,15 @@ namespace ServerSide
                     // End match handling when clock runs out + notify clients
                     queuedMatch.OnGameOver += async () =>
                     {
-                        EndGameRouteParams endGameParams = new(player1.Score, player2.Score);
-                        Packet endGamePacket = new(Route.EndGame, endGameParams);
+                        EndGameRouteParams endGameParamsPlayer1 = new(player1.Score, player2.Score);
+                        EndGameRouteParams endGameParamsPlayer2 = new(player2.Score, player1.Score);
+
+                        Packet endGamePacket1 = new(Route.EndGame, endGameParamsPlayer1);
+                        Packet endGamePacket2 = new(Route.EndGame, endGameParamsPlayer2);
 
                         await Task.WhenAll(
-                            NetworkUtils.SendPacketAsync(socketPlayer1, endGamePacket, _cts.Token),
-                            NetworkUtils.SendPacketAsync(socketPlayer2, endGamePacket, _cts.Token)
+                            NetworkUtils.SendPacketAsync(socketPlayer1, endGamePacket1, _cts.Token),
+                            NetworkUtils.SendPacketAsync(socketPlayer2, endGamePacket2, _cts.Token)
                         );
 
                         _cts.Cancel();

@@ -7,7 +7,7 @@ public class BoggleGame
 {
     public BoggleBoard Board { get; private set; }
     public int Clock { get; private set; }
-    public List<string> DiscoveredWords { get; set; }
+    public Dictionary<string, BogglePlayer> DiscoveredWords { get; set; }
     private readonly BoggleWordsDatabase _database;
     public event Action? OnGameOver;
 

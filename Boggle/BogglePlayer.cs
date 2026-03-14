@@ -10,6 +10,7 @@ namespace Boggle
     {
         public BoggleGame Match { get; init; }
         public string Name { get; init; }
+        public List<string> Guesses { get; set; }
         private int _score;
         public event Action? OnScoreUpdate;
 
@@ -18,6 +19,7 @@ namespace Boggle
             this.Match = match;
             this.Name = name;
             this.Score = 0;
+            this.Guesses = [];
         }
 
         public int Score

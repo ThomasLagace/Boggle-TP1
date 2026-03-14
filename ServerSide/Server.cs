@@ -80,30 +80,44 @@ namespace ServerSide
         private async Task HandleGameplayAsync(Socket playerSocket)
         {
             BogglePlayer player;
-            _clients.TryGetValue(playerSocket, out player!);
 
-            while (!_cts.IsCancellationRequested)
+            if (_clients.TryGetValue(playerSocket, out player!)) 
             {
-                Packet<List<(int, int)>> packet = await NetworkUtils.ReceiveMessageAsync<List<(int, int)>>(playerSocket, _cts.Token);
-
-                if (packet.Endpoint != Network.Endpoint.SubmitGuess) continue;
-
-                List<(int, int)> guess = packet.Payload;
-
-                if (!player.Match.ValidateGuess(guess)) continue;
-
-                string word = player.Match.Board.GetStringFromCoords(guess);
-                int points = BoggleUtils.GetPoints(word);
-
-                if (player.Match.DiscoveredWords.Contains(word)) 
+                while (!_cts.IsCancellationRequested)
                 {
-                    //Handle duplicate word behaviour - lower player2 score by points value
+                    Packet<List<(int, int)>> packet = await NetworkUtils.ReceiveMessageAsync<List<(int, int)>>(playerSocket, _cts.Token);
 
-                    return;
+                    if (packet.Endpoint != Network.Endpoint.SubmitGuess) continue;
+
+                    List<(int, int)> guess = packet.Payload;
+
+                    if (!player.Match.ValidateGuess(guess)) continue;
+
+                    string word = player.Match.Board.GetStringFromCoords(guess);
+
+                    if (player.Guesses.Contains(word)) 
+                    {
+                        Packet<string> dupeGuessPacket = new(Network.Endpoint.ReceiveMessage, "You have already found this word.");
+
+                        await NetworkUtils.SendMessageAsync(playerSocket, dupeGuessPacket);
+
+                        continue;
+                    }
+
+                    player.Guesses.Add(word);
+
+                    int points = BoggleUtils.GetPoints(word);
+
+                    if (player.Match.DiscoveredWords.TryGetValue(word, out BogglePlayer? opponent))
+                    {
+                        opponent.Score -= points;
+
+                        return;
+                    }
+
+                    player.Match.DiscoveredWords.Add(word, player);
+                    player.Score += points;
                 }
-
-                player.Match.DiscoveredWords.Add(word);
-                player.Score += points;
             }
         }
 
@@ -112,12 +126,13 @@ namespace ServerSide
             Packet<string> name = await NetworkUtils.ReceiveMessageAsync<string>(playerSocket, _cts.Token);
             BogglePlayer player = new BogglePlayer(name.Payload, match);
 
-            _clients.TryAdd(playerSocket, player);
-
-            player.OnScoreUpdate += () =>
+            if (_clients.TryAdd(playerSocket, player)) 
             {
-                _ = NetworkUtils.SendMessageAsync(playerSocket, new Packet<BogglePlayer>(Network.Endpoint.ScoreUpdate, player));
-            };
+                player.OnScoreUpdate += () =>
+                {
+                    _ = NetworkUtils.SendMessageAsync(playerSocket, new Packet<BogglePlayer>(Network.Endpoint.ScoreUpdate, player));
+                };
+            }
         }
     }
 }

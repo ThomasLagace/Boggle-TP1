@@ -13,11 +13,13 @@ public partial class BoggleClientNode : Node
     public delegate void OnLoggingEventHandler(string message, Client.LoggingSeverity severity);
 
     [Signal]
-    public delegate void OnGameStartEventHandler(long endTime);
+    public delegate void OnGameEndEventHandler(long endTime);
+    [Signal]
+    public delegate void OnReceiveMessageEventHandler(string message);
     [Signal]
     public delegate void OnScoreUpdateEventHandler(int clientScore, int opponentScore);
     [Signal]
-    public delegate void OnReceiveMessageEventHandler(string message);
+    public delegate void OnGameStartEventHandler(long endTime);
 
     public bool HasGameStarted() => _board != null;
     public BoggleBoardResource? GetBoggleBoard() => _board;
@@ -34,10 +36,14 @@ public partial class BoggleClientNode : Node
             EmitSignal(SignalName.OnLogging, message, (int)severity);
         };
 
-        _client.OnGameStart += (DateTimeOffset endTime, BoggleBoard board) =>
+        _client.OnEndGame += (clientScore, opponentScore) =>
         {
-            _board = new BoggleBoardResource(board);
-            EmitSignal(SignalName.OnGameStart, endTime.ToUnixTimeSeconds());
+            EmitSignal(SignalName.OnGameEnd, clientScore, opponentScore);
+        };
+
+        _client.OnReceiveMessage += (message) =>
+        {
+            EmitSignal(SignalName.OnReceiveMessage, message);
         };
 
         _client.OnScoreUpdate += (clientScore, opponentScore) =>
@@ -45,9 +51,10 @@ public partial class BoggleClientNode : Node
             EmitSignal(SignalName.OnScoreUpdate, clientScore, opponentScore);
         };
 
-        _client.OnReceiveMessage += (message) =>
+        _client.OnGameStart += (DateTimeOffset endTime, BoggleBoard board) =>
         {
-            EmitSignal(SignalName.OnReceiveMessage, message);
+            _board = new BoggleBoardResource(board);
+            EmitSignal(SignalName.OnGameStart, endTime.ToUnixTimeSeconds());
         };
     }
 

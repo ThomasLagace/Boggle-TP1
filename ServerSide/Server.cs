@@ -72,12 +72,12 @@ namespace ServerSide
                     };
 
                     await Task.WhenAll(
-                        HandleGameplayAsync(socketPlayer1),
-                        HandleGameplayAsync(socketPlayer2)
+                        HandleGameplayAsync(socketPlayer1, queuedMatch.GameCts),
+                        HandleGameplayAsync(socketPlayer2, queuedMatch.GameCts)
                     );
 
-                    StartGameRouteParams startGameParams1 = new(DateTimeOffset.Now, queuedMatch.Board, player2.Name); // placeholder date value -- will be replaced shortly
-                    StartGameRouteParams startGameParams2 = new(DateTimeOffset.Now, queuedMatch.Board, player1.Name);
+                    StartGameRouteParams startGameParams1 = new(queuedMatch.GameEndTime, queuedMatch.Board, player2.Name);
+                    StartGameRouteParams startGameParams2 = new(queuedMatch.GameEndTime, queuedMatch.Board, player1.Name);
 
                     Packet startGamePacket1 = new(Route.StartGame, startGameParams1);
                     Packet startGamePacket2 = new(Route.StartGame, startGameParams2);
@@ -86,7 +86,7 @@ namespace ServerSide
                     await Task.WhenAll(
                         NetworkUtils.SendPacketAsync(socketPlayer1, startGamePacket1, _cts.Token),
                         NetworkUtils.SendPacketAsync(socketPlayer2, startGamePacket2, _cts.Token),
-                        queuedMatch.StartGame()
+                        queuedMatch.StartGame(_cts.Token)
                     );
 
                     // End match handling when clock runs out + notify clients
@@ -102,8 +102,6 @@ namespace ServerSide
                             NetworkUtils.SendPacketAsync(socketPlayer1, endGamePacket1, _cts.Token),
                             NetworkUtils.SendPacketAsync(socketPlayer2, endGamePacket2, _cts.Token)
                         );
-
-                        _cts.Cancel();
                     };
                 }
                 catch (SocketException ex) when (ex.SocketErrorCode == SocketError.Interrupted)
@@ -114,14 +112,14 @@ namespace ServerSide
             }
         }
 
-        private async Task HandleGameplayAsync(Socket playerSocket)
+        private async Task HandleGameplayAsync(Socket playerSocket, CancellationTokenSource gameCts)
         {
             BogglePlayer player;
 
             if (_clients.TryGetValue(playerSocket, out player!)) 
             {
                 // Listen for guesses until game ends
-                while (!_cts.IsCancellationRequested)
+                while (!gameCts.IsCancellationRequested)
                 {
                     try 
                     {

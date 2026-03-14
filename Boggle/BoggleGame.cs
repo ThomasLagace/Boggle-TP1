@@ -6,12 +6,13 @@ namespace Boggle;
 public class BoggleGame
 {
     public BoggleBoard Board { get; private set; }
-    public int Clock { get; private set; }
+    public DateTimeOffset GameEndTime { get; init; }
     public Dictionary<string, BogglePlayer> DiscoveredWords { get; set; }
-    private readonly BoggleWordsDatabase _database;
+    public CancellationTokenSource GameCts { get; init; }
     public event Action? OnGameOver;
+    private readonly BoggleWordsDatabase _database;
 
-    public BoggleGame(BoggleWordsDatabase database, int gameDurationSeconds = 180)
+    public BoggleGame(BoggleWordsDatabase database, DateTimeOffset gameEndTime)
     {
         List<List<string>> dice =
         [
@@ -43,17 +44,23 @@ public class BoggleGame
 
         _database = database;
         Board = new BoggleBoard(board.Select(row => row.Cast<IDie>().ToList()).ToList());
-        Clock = gameDurationSeconds;
+        GameEndTime = gameEndTime;
         DiscoveredWords = [];
+        GameCts = new CancellationTokenSource();
     }
 
-    public async Task StartGame() 
+    public BoggleGame(BoggleWordsDatabase database) : this(database, DateTimeOffset.Now + TimeSpan.FromMinutes(3)) { }
+
+    public async Task StartGame(CancellationToken token) 
     {
-        for (; Clock > 0; Clock--) 
+        TimeSpan duration = GameEndTime - DateTimeOffset.Now;
+
+        if (duration > TimeSpan.Zero) 
         {
-            await Task.Delay(1000);
+            await Task.Delay(duration, token);
         }
 
+        GameCts.Cancel();
         this.OnGameOver?.Invoke();
     }
 

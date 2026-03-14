@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://dalwpl7fs58kp"]
 
 [ext_resource type="Script" uid="uid://d2okef5tg4vjo" path="res://scripts/boggle_board_ui_scripts/boggle_board_ui.gd" id="1_4b8bx"]
-[ext_resource type="PackedScene" path="res://scenes/boggle_letter_ui.tscn" id="2_ogc3l"]
+[ext_resource type="PackedScene" uid="uid://dtcyinot5wugk" path="res://scenes/boggle_letter_ui.tscn" id="2_ogc3l"]
 
-[node name="BoggleBoardUI" type="Control" unique_id=910523621 node_paths=PackedStringArray("boggle_letter_parent")]
+[node name="BoggleBoardUI" type="Control" unique_id=910523621 node_paths=PackedStringArray("boggle_letter_parent", "line_2d_guess", "line_2d_to_mouse")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -12,7 +12,9 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_4b8bx")
 boggle_letter_scene = ExtResource("2_ogc3l")
-boggle_letter_parent = NodePath("MarginContainer/GridContainer")
+boggle_letter_parent = NodePath("MarginContainer/AspectRatioContainer/GridContainer")
+line_2d_guess = NodePath("GuessLine2D")
+line_2d_to_mouse = NodePath("MouseLine2D")
 
 [node name="Panel" type="Panel" parent="." unique_id=13661677]
 layout_mode = 1
@@ -21,6 +23,20 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="GuessLine2D" type="Line2D" parent="." unique_id=1721025661]
+width = 20.0
+default_color = Color(0.005137511, 0.730178, 0, 1)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="MouseLine2D" type="Line2D" parent="." unique_id=1388118936]
+width = 20.0
+default_color = Color(0.005137511, 0.730178, 0, 1)
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
 
 [node name="MarginContainer" type="MarginContainer" parent="." unique_id=28469601]
 layout_mode = 1
@@ -34,8 +50,11 @@ theme_override_constants/margin_top = 50
 theme_override_constants/margin_right = 255
 theme_override_constants/margin_bottom = 50
 
-[node name="GridContainer" type="GridContainer" parent="MarginContainer" unique_id=1311055440]
+[node name="AspectRatioContainer" type="AspectRatioContainer" parent="MarginContainer" unique_id=613733386]
 layout_mode = 2
-theme_override_constants/h_separation = 4
-theme_override_constants/v_separation = 4
+
+[node name="GridContainer" type="GridContainer" parent="MarginContainer/AspectRatioContainer" unique_id=1311055440]
+layout_mode = 2
+theme_override_constants/h_separation = 48
+theme_override_constants/v_separation = 48
 columns = 4

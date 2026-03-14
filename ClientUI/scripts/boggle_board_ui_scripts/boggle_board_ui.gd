@@ -8,9 +8,25 @@ signal on_guess_canceled()
 @export var boggle_letter_scene: PackedScene
 @export var boggle_letter_parent: Control
 @export var cancel_guess_area: Array[Control]
+@export var line_2d_guess: Line2D
+@export var line_2d_to_mouse: Line2D
 
 var _current_guess_ui: Array[BoggleLetterUI] = []
 var _board: BoggleBoardResource
+
+func _ready() -> void:
+	line_2d_to_mouse.visible = false
+	line_2d_to_mouse.add_point(Vector2(1, 1))
+	line_2d_to_mouse.add_point(Vector2(1, 1))
+
+func _process(_delta: float) -> void:
+	if len(_current_guess_ui) > 0:
+		line_2d_to_mouse.visible = true
+		var last_letter = _current_guess_ui[-1]
+		line_2d_to_mouse.set_point_position(0, last_letter.global_position + last_letter.size * 0.5)
+		line_2d_to_mouse.set_point_position(1, get_viewport().get_mouse_position())
+	else:
+		line_2d_to_mouse.visible = false
 
 func initialize(board: BoggleBoardResource) -> void:
 	_board = board
@@ -41,15 +57,19 @@ func submit_guess() -> void:
 			return
 	on_submit_guess.emit(get_current_guess_coords())
 	_current_guess_ui = []
+	line_2d_guess.clear_points()
 
 func clear_guess() -> void:
 	_current_guess_ui.clear()
 	on_modify_guess.emit(get_current_guess_coords())
 	on_guess_canceled.emit()
+	line_2d_guess.clear_points()
 
 func remove_last_guess() -> void:
 	_current_guess_ui.pop_back()
 	on_modify_guess.emit(get_current_guess_coords())
+	if line_2d_guess.get_point_count() > 0:
+		line_2d_guess.remove_point(line_2d_guess.get_point_count() - 1)
 
 func add_guess(letter_ui: BoggleLetterUI) -> void:
 	var new_ui_guess: Array[BoggleLetterUI] = _current_guess_ui.duplicate()
@@ -61,6 +81,8 @@ func add_guess(letter_ui: BoggleLetterUI) -> void:
 		print("Adding a guess at [%d, %d]" % [letter_ui._coords.X, letter_ui._coords.Y])
 		_current_guess_ui.assign(new_ui_guess)
 		on_modify_guess.emit(get_current_guess_coords())
+
+		line_2d_guess.add_point(letter_ui.global_position + letter_ui.size * 0.5)
 
 func get_current_word() -> String:
 	return _board.GetStringFromCoords(get_current_guess_coords())

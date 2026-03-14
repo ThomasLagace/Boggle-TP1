@@ -1,0 +1,66 @@
+[gd_scene format=3 uid="uid://b7276br67b2wa"]
+
+[ext_resource type="Script" uid="uid://crio4w3fi8n11" path="res://scripts/boggle_online/boggle_online_ui.gd" id="1_yrg4u"]
+[ext_resource type="PackedScene" uid="uid://dalwpl7fs58kp" path="res://scenes/boggle_board_ui.tscn" id="2_4vr5w"]
+
+[node name="BoggleOnlineGameUI" type="Control" unique_id=140386652 node_paths=PackedStringArray("timer_label", "boggle_board_ui", "client_score_label", "opponent_score_label", "opponent_name_label")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_yrg4u")
+timer_label = NodePath("TimeLeftLabel")
+boggle_board_ui = NodePath("MarginContainer/BoggleBoardUI")
+client_score_label = NodePath("ClientScoreLabel")
+opponent_score_label = NodePath("OpponentScoreLabel")
+opponent_name_label = NodePath("Label")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=173087912]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 200
+theme_override_constants/margin_top = 100
+theme_override_constants/margin_right = 200
+theme_override_constants/margin_bottom = 100
+
+[node name="BoggleBoardUI" parent="MarginContainer" unique_id=910523621 instance=ExtResource("2_4vr5w")]
+layout_mode = 2
+
+[node name="TimeLeftLabel" type="Label" parent="." unique_id=395730599]
+layout_mode = 0
+offset_left = 43.0
+offset_top = 23.0
+offset_right = 83.0
+offset_bottom = 46.0
+text = "5:00"
+horizontal_alignment = 1
+
+[node name="ClientScoreLabel" type="Label" parent="." unique_id=1136568849]
+layout_mode = 0
+offset_left = 418.0
+offset_top = 45.0
+offset_right = 506.0
+offset_bottom = 68.0
+text = "ClientScore"
+
+[node name="OpponentScoreLabel" type="Label" parent="." unique_id=1389627518]
+layout_mode = 0
+offset_left = 612.0
+offset_top = 48.0
+offset_right = 733.0
+offset_bottom = 71.0
+text = "OpponentScore"
+
+[node name="Label" type="Label" parent="." unique_id=1966377775]
+layout_mode = 0
+offset_left = 29.0
+offset_top = 589.0
+offset_right = 154.0
+offset_bottom = 612.0
+text = "OpponentName"

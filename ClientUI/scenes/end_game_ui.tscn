@@ -1,0 +1,68 @@
+[gd_scene format=3 uid="uid://b7gobrut8p2cj"]
+
+[ext_resource type="Script" uid="uid://d3rys1bol3umk" path="res://scripts/boggle_online/end_game_ui.gd" id="1_520i4"]
+
+[node name="EndGameUI" type="Control" unique_id=189466381]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_520i4")
+
+[node name="BackgroundPanel" type="Panel" parent="." unique_id=2003320469]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="WinnerLabel" type="Label" parent="." unique_id=1753114694]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -83.0
+offset_top = -37.0
+offset_right = 83.0
+offset_bottom = 37.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "WinnerLabel"
+horizontal_alignment = 1
+
+[node name="YourScoreLabel" type="Label" parent="." unique_id=390673327]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -208.0
+offset_top = 130.0
+offset_right = -42.0
+offset_bottom = 204.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "YourScoreLabel"
+horizontal_alignment = 1
+
+[node name="OpponentScoreLabel" type="Label" parent="." unique_id=762722186]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 44.0
+offset_top = 128.0
+offset_right = 210.0
+offset_bottom = 202.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "OpponentScoreLabel"
+horizontal_alignment = 1

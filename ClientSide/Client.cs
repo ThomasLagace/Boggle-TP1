@@ -97,6 +97,13 @@ public class Client
         await NetworkUtils.SendPacketAsync(_socket, packet, _cts?.Token);
     }
 
+    public async Task SubmitNameToServerAsync(string name)
+    {
+        SubmitNameRouteParams routeParams = new(name);
+        Packet packet = new(Route.SubmitName, routeParams);
+        await NetworkUtils.SendPacketAsync(_socket, packet, _cts?.Token);
+    }
+
     private async Task ListenAsync()
     {
         OnLogging?.Invoke("Started listening requests from the server.", LoggingSeverity.Info);

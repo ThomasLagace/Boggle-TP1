@@ -27,6 +27,8 @@ namespace ServerSide
 
         public async Task StartupAsync() 
         {
+            Console.WriteLine($"Starting server on {Endpoint.Address}:{Endpoint.Port}...");
+
             try
             {
                 Socket.Bind(Endpoint);

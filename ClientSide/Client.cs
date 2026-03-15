@@ -25,6 +25,7 @@ public class Client
     public event Action<string, LoggingSeverity>? OnLogging;
 
     public event Action<int, int>? OnEndGame;
+    public event Action? OnOpponentDisconected;
     public event Action<string>? OnReceiveMessage;
     public event Action<int, int>? OnScoreUpdate;
     public event Action<DateTimeOffset, BoggleBoard, string>? OnGameStart;
@@ -123,6 +124,10 @@ public class Client
                     if (packet.RouteParams is EndGameRouteParams endGameRouteParams)
                         EndGameRoute(endGameRouteParams);
                     break;
+                case Route.OpponnentDisconnected:
+                    if (packet.RouteParams is OpponentDisconnectedRouteParams opponentDisconnectedRouteParams)
+                        ReceiveMessageRoute(receiveMessageRouteParams);
+                    break;
                 case Route.ReceiveMessage:
                     if (packet.RouteParams is ReceiveMessageRouteParams receiveMessageRouteParams)
                         ReceiveMessageRoute(receiveMessageRouteParams);
@@ -142,6 +147,11 @@ public class Client
     private void EndGameRoute(EndGameRouteParams routeParams)
     {
         OnEndGame?.Invoke(routeParams.ClientScore, routeParams.OpponentScore);
+    }
+
+    private void OpponentDisconectedRoute(OpponentDisconnectedRouteParams routeParams)
+    {
+        OnOpponentDisconected?.Invoke();
     }
 
     private void ReceiveMessageRoute(ReceiveMessageRouteParams routeParams)

@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://dscgslbxm0bc5"]
+
+[ext_resource type="Script" uid="uid://cx13e0x3mkbqi" path="res://scripts/boggle_online/opponent_disconnected_ui.gd" id="1_txiof"]
+
+[node name="OpponentDisconnectedUI" type="Control" unique_id=2047201568]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_txiof")

@@ -4,6 +4,7 @@ const CONNECT_CLIENT_UI = preload("uid://doidx1hat37mv")
 const WAITING_OTHER_PLAYER_UI = preload("uid://dglgcfqtkw2x1")
 const BOGGLE_ONLINE_GAME_UI = preload("uid://b7276br67b2wa")
 const END_GAME_UI = preload("uid://b7gobrut8p2cj")
+const OPPONENT_DISCONNECTED_UI = preload("uid://dscgslbxm0bc5")
 
 func _ready() -> void:
 	GlobalClientConnect.on_client_initialized.connect(on_client_initialized)
@@ -34,11 +35,9 @@ func on_game_start(unix_endtime: int, opponent_name: String) -> void:
 	get_tree().change_scene_to_node(game_scene)
 
 func on_opponent_disconnected() -> void:
-	var end_game_scene = END_GAME_UI.instantiate()
-	end_game_scene.initialize(-1, -1, GlobalClientConnect.opponent_name + " s'est déconnecté(e)")
-
 	GlobalClientConnect.dispose()
 
+	var end_game_scene = OPPONENT_DISCONNECTED_UI.instantiate()
 	get_tree().change_scene_to_node(end_game_scene)
 
 func on_game_end(client_score: int, opponent_score: int) -> void:

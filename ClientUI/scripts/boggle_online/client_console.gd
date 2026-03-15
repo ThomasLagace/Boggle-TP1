@@ -1,6 +1,7 @@
 extends Container
 
 @onready var log_container: VBoxContainer = $ScrollContainer/LogContainer
+@onready var scroll_container: ScrollContainer = $ScrollContainer
 
 func _ready() -> void:
 	var client = GlobalClientConnect.client
@@ -17,6 +18,9 @@ func initialize(client: BoggleClientNode) -> void:
 	)
 
 func add_log(log: String) -> void:
+	var time = Time.get_time_dict_from_system()
+	var formatted: String = "[%02d:%02d:%02d] " % [time.hour, time.minute, time.second]
 	var label = Label.new()
-	label.text = log
+	label.text = formatted + log
 	log_container.add_child(label)
+	log_container.move_child(label, 0)

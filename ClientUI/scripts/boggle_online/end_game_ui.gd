@@ -1,9 +1,9 @@
 class_name EndGameUI
 extends Control
 
-@onready var winner_label: Label = $WinnerLabel
-@onready var your_score_label: Label = $YourScoreLabel
-@onready var opponent_score_label: Label = $OpponentScoreLabel
+@onready var winner_label: Label = $CenterContainer/HBoxContainer/WinnerLabel
+@onready var your_score_label: Label = $CenterContainer2/HBoxContainer/YourScoreLabel
+@onready var opponent_score_label: Label = $CenterContainer2/HBoxContainer/OpponentScoreLabel
 @onready var return_to_connection_button: Button = $CenterContainer3/ReturnToConnectionButton
 const CONNECT_CLIENT_UI = preload("uid://doidx1hat37mv")
 

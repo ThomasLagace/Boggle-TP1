@@ -2,10 +2,8 @@
 using Network;
 using Network.ClientRoutes;
 using Network.ServerRoutes;
-using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
-using System.Numerics;
 
 namespace ServerSide
 {
@@ -35,10 +33,14 @@ namespace ServerSide
             }
             catch (SocketException ex) when (ex.SocketErrorCode == SocketError.AddressAlreadyInUse)
             {
+                Console.WriteLine("Server cannot bind to a busy endpoint.");
+
                 return;
             }
 
             Socket.Listen(_connectionQueueCapacity);
+
+            Console.WriteLine("Server started. Waiting for connections...");
 
             while (!_cts.IsCancellationRequested)
             {
@@ -67,16 +69,24 @@ namespace ServerSide
                     // End match handling when clock runs out + notify clients
                     queuedMatch.OnGameOver += async () => await HandleGameOverAsync(socketPlayer1, socketPlayer2);
                 }
-                catch (SocketException ex) when (ex.SocketErrorCode == SocketError.ConnectionReset) { break; }
-                catch (SocketException ex) when (ex.SocketErrorCode == SocketError.Interrupted) { break; }
+                catch (SocketException ex) when (ex.SocketErrorCode == SocketError.Interrupted) 
+                {
+                    Console.WriteLine("Connection handshake was interrupted.");
+
+                    break; 
+                }
                 catch (OperationCanceledException) { }
             }
+
+            Console.WriteLine("Server closed.");
 
             await ShutdownAsync();
         }
 
         public async Task ShutdownAsync()
         {
+            Console.WriteLine("Shutting down server...");
+
             // Notify clients of shutdown
             foreach (var client in _clients)
             {
@@ -87,17 +97,24 @@ namespace ServerSide
 
                     await NetworkUtils.SendPacketAsync(client.Key, connectionErrorPacket);
                 }
-                catch (SocketException ex) when (ex.SocketErrorCode == SocketError.ConnectionReset) { }
+                catch (SocketException ex) when (ex.SocketErrorCode == SocketError.ConnectionReset)
+                {
+                    Console.WriteLine("Connection with client endpoint was reset.");
+                }
             }
 
             _cts.Cancel();
 
             Socket.Shutdown(SocketShutdown.Both);
             Socket.Close();
+
+            Console.WriteLine("Server shutdown complete.");
         }
 
         private async Task RegisterPlayerAsync(Socket playerSocket, BoggleGame match)
         {
+            Console.WriteLine($"Registering {playerSocket.RemoteEndPoint} to player list...");
+
             try
             {
                 // Listen for player name
@@ -109,12 +126,21 @@ namespace ServerSide
                 BogglePlayer player = new BogglePlayer(name, match);
 
                 _clients.TryAdd(playerSocket, player);
+
+                Console.WriteLine($"Registered player {name} [{playerSocket.RemoteEndPoint}].");
             }
-            catch (SocketException ex) when (ex.SocketErrorCode == SocketError.ConnectionReset) { return; }
+            catch (SocketException ex) when (ex.SocketErrorCode == SocketError.ConnectionReset)
+            {
+                Console.WriteLine("Connection with client endpoint was reset.");
+
+                return;
+            }
         }
 
         private async Task StartGameAsync(BoggleGame game, Socket player1Socket, Socket player2Socket)
         {
+            Console.WriteLine($"Starting game between {_clients[player1Socket].Name} [{player1Socket.RemoteEndPoint}] and {_clients[player2Socket].Name} [{player2Socket.RemoteEndPoint}]...");
+
             BogglePlayer player1 = _clients[player1Socket];
             BogglePlayer player2 = _clients[player2Socket];
 
@@ -126,12 +152,23 @@ namespace ServerSide
             Packet startGamePacket1 = new(Route.StartGame, startGameParams1);
             Packet startGamePacket2 = new(Route.StartGame, startGameParams2);
 
-            await Task.WhenAll(
+            try
+            {
+                await Task.WhenAll(
                 NetworkUtils.SendPacketAsync(player1Socket, startGamePacket1, _cts.Token),
                 NetworkUtils.SendPacketAsync(player2Socket, startGamePacket2, _cts.Token)
             );
+            }
+            catch (SocketException ex) when (ex.SocketErrorCode == SocketError.ConnectionReset)
+            {
+                Console.WriteLine("Connection with client endpoint was reset.");
+
+                return;
+            }
 
             _ = game.StartGame(_cts.Token);
+
+            Console.WriteLine("Game started.");
         }
 
         private async Task HandleGameplayAsync(Socket playerSocket, CancellationTokenSource gameCts)
@@ -161,6 +198,8 @@ namespace ServerSide
 
                             await NetworkUtils.SendPacketAsync(playerSocket, dupeGuessPacket, _cts.Token);
 
+                            Console.WriteLine($"Player {player.Name} [{playerSocket.RemoteEndPoint}] attempted duplicate guess '{word}'.");
+
                             continue;
                         }
 
@@ -184,13 +223,20 @@ namespace ServerSide
 
                             opponent.Score -= points;
 
+                            Console.WriteLine($"Both {player.Name} [{playerSocket.RemoteEndPoint}] and {opponent.Name} [{opponentSocket.RemoteEndPoint}] have attempted guess '{word}'.");
+
                             return;
                         }
 
                         player.Match.DiscoveredWords.Add(word, player);
                         player.Score += points;
                     }
-                    catch (SocketException ex) when (ex.SocketErrorCode == SocketError.ConnectionReset) { return; }
+                    catch (SocketException ex) when (ex.SocketErrorCode == SocketError.ConnectionReset)
+                    {
+                        Console.WriteLine("Connection with client endpoint was reset.");
+
+                        return; 
+                    }
                     catch (OperationCanceledException) { return; }
                 }
             }
@@ -201,14 +247,27 @@ namespace ServerSide
             BogglePlayer player1 = _clients[player1Socket];
             BogglePlayer player2 = _clients[player2Socket];
 
+            Console.WriteLine($"Updating scores for {player1.Name} [{player1Socket.RemoteEndPoint}] and {player2.Name} [{player2Socket.RemoteEndPoint}]...");
+
             ScoreUpdateRouteParams scoreParams1 = new(player1.Score, player2.Score);
             Packet scorePacket1 = new(Route.ScoreUpdate, scoreParams1);
 
             ScoreUpdateRouteParams scoreParams2 = new(player2.Score, player1.Score);
             Packet scorePacket2 = new(Route.ScoreUpdate, scoreParams2);
 
-            _ = NetworkUtils.SendPacketAsync(player1Socket, scorePacket1, _cts.Token);
-            _ = NetworkUtils.SendPacketAsync(player2Socket, scorePacket2, _cts.Token);
+            try
+            {
+                _ = NetworkUtils.SendPacketAsync(player1Socket, scorePacket1, _cts.Token);
+                _ = NetworkUtils.SendPacketAsync(player2Socket, scorePacket2, _cts.Token);
+            }
+            catch (SocketException ex) when (ex.SocketErrorCode == SocketError.ConnectionReset)
+            {
+                Console.WriteLine("Connection with client endpoint was reset.");
+
+                return;
+            }
+
+            Console.WriteLine("Scores updated.");
         }
 
         private async Task HandleGameOverAsync(Socket player1Socket, Socket player2Socket)
@@ -216,16 +275,29 @@ namespace ServerSide
             BogglePlayer player1 = _clients[player1Socket];
             BogglePlayer player2 = _clients[player2Socket];
 
+            Console.WriteLine($"Ending game between {player1.Name} [{player1Socket.RemoteEndPoint}] and {player2.Name} [{player2Socket.RemoteEndPoint}]...");
+
             EndGameRouteParams endGameParamsPlayer1 = new(player1.Score, player2.Score);
             EndGameRouteParams endGameParamsPlayer2 = new(player2.Score, player1.Score);
 
             Packet endGamePacket1 = new(Route.EndGame, endGameParamsPlayer1);
             Packet endGamePacket2 = new(Route.EndGame, endGameParamsPlayer2);
 
-            await Task.WhenAll(
-                NetworkUtils.SendPacketAsync(player1Socket, endGamePacket1, _cts.Token),
-                NetworkUtils.SendPacketAsync(player2Socket, endGamePacket2, _cts.Token)
-            );
+            try
+            {
+                await Task.WhenAll(
+                    NetworkUtils.SendPacketAsync(player1Socket, endGamePacket1, _cts.Token),
+                    NetworkUtils.SendPacketAsync(player2Socket, endGamePacket2, _cts.Token)
+                );
+            }
+            catch (SocketException ex) when (ex.SocketErrorCode == SocketError.ConnectionReset)
+            {
+                Console.WriteLine("Connection with client endpoint was reset.");
+
+                return;
+            }
+
+            Console.WriteLine("Game ended.");
         }
     }
 }

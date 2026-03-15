@@ -50,9 +50,9 @@ grow_vertical = 2
 script = ExtResource("1_iblst")
 timer_label = NodePath("TimeLeftLabel")
 boggle_board_ui = NodePath("BoggleBoardUI")
-client_score_label = NodePath("ClientScoreLabel")
-opponent_score_label = NodePath("OpponentScoreLabel")
-opponent_name_label = NodePath("OpponentNameLabel")
+client_score_label = NodePath("HBoxScore/ClientScoreLabel")
+opponent_score_label = NodePath("HBoxScore/OpponentScoreLabel")
+opponent_name_label = NodePath("HBoxContainer/OpponentNameLabel")
 current_guess_label = NodePath("CurrentGuessLabel")
 
 [node name="BoggleBoardUI" parent="." unique_id=910523621 node_paths=PackedStringArray("cancel_guess_area") instance=ExtResource("2_e38c2")]
@@ -61,35 +61,66 @@ cancel_guess_area = [NodePath("../CancelAreaMargin1"), NodePath("../CancelAreaMa
 
 [node name="TimeLeftLabel" type="Label" parent="." unique_id=395730599]
 layout_mode = 0
-offset_left = 43.0
+offset_left = 51.0
 offset_top = 23.0
-offset_right = 83.0
+offset_right = 91.0
 offset_bottom = 46.0
 text = "5:00"
 horizontal_alignment = 1
 
-[node name="ClientScoreLabel" type="Label" parent="." unique_id=1136568849]
-layout_mode = 0
-offset_left = 207.0
-offset_top = 42.0
-offset_right = 295.0
-offset_bottom = 65.0
+[node name="HBoxScore" type="HBoxContainer" parent="." unique_id=210730740]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.4939236
+anchor_top = 0.96450615
+anchor_right = 0.5260417
+anchor_bottom = 0.96450615
+offset_left = -213.0
+offset_top = -20.0
+offset_right = 213.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+metadata/_edit_use_anchors_ = true
+
+[node name="YourScoreLabel" type="Label" parent="HBoxScore" unique_id=1967794131]
+layout_mode = 2
+text = "Votre score:"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ClientScoreLabel" type="Label" parent="HBoxScore" unique_id=1136568849]
+layout_mode = 2
 text = "ClientScore"
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="OpponentScoreLabel" type="Label" parent="." unique_id=1389627518]
-layout_mode = 0
-offset_left = 845.0
-offset_top = 41.0
-offset_right = 966.0
-offset_bottom = 64.0
+[node name="OpponentLabel" type="Label" parent="HBoxScore" unique_id=837250895]
+layout_mode = 2
+text = "Score opposant:"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="OpponentScoreLabel" type="Label" parent="HBoxScore" unique_id=1389627518]
+layout_mode = 2
 text = "OpponentScore"
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="OpponentNameLabel" type="Label" parent="." unique_id=1966377775]
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1942898644]
 layout_mode = 0
-offset_left = 29.0
-offset_top = 589.0
-offset_right = 154.0
-offset_bottom = 612.0
+offset_left = 43.0
+offset_top = 598.0
+offset_right = 229.0
+offset_bottom = 638.0
+
+[node name="AgainstLabel" type="Label" parent="HBoxContainer" unique_id=1298295353]
+layout_mode = 2
+text = "Contre:"
+
+[node name="OpponentNameLabel" type="Label" parent="HBoxContainer" unique_id=1966377775]
+layout_mode = 2
 text = "OpponentName"
 
 [node name="CurrentGuessLabel" type="Label" parent="." unique_id=36678901]

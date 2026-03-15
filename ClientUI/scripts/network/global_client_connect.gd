@@ -38,6 +38,7 @@ func on_client_connect_callback(connected):
 		print("Failed to connect")
 
 func dispose() -> void:
+	client.DisconnectSocket()
 	client.queue_free()
 	GlobalClientConnect.client = null
 	GlobalClientConnect.client_name = ""

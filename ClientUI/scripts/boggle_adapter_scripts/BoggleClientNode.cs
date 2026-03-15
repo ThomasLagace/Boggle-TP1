@@ -11,6 +11,8 @@ public partial class BoggleClientNode : Node
 {
     [Signal]
     public delegate void OnLoggingEventHandler(string message, Client.LoggingSeverity severity);
+    [Signal]
+    public delegate void OnLostConnectionEventHandler();
 
     [Signal]
     public delegate void OnGameEndEventHandler(int clientScore, int opponentScore);
@@ -36,6 +38,11 @@ public partial class BoggleClientNode : Node
         _client.OnLogging += (message, severity) =>
         {
             EmitSignal(SignalName.OnLogging, message, (int)severity);
+        };
+
+        _client.OnLostConnection += () =>
+        {
+            EmitSignal(SignalName.OnLostConnection);
         };
 
         _client.OnEndGame += (clientScore, opponentScore) =>
@@ -65,17 +72,6 @@ public partial class BoggleClientNode : Node
         };
     }
 
-    public void SubmitGuessToServer(Godot.Collections.Array<BoggleCoords> boggleCoords)
-    {
-        List<(int, int)> guess = GodotUtils.ConvertBoggleCoordsToTuple(boggleCoords);
-        _ = _client.SubmitGuessToServerAsync(guess);
-    }
-
-    public void SubmitNameToServer(string name)
-    {
-        _ = _client.SubmitNameToServerAsync(name);
-    }
-
     public async void ConnectAsync(Callable onConnectionCallback)
     {
         if (_client == null)
@@ -86,6 +82,22 @@ public partial class BoggleClientNode : Node
         await _client.ConnectAsync();
 
         onConnectionCallback.Call(_client.IsRunning);
+    }
+
+    public void DisconnectSocket()
+    {
+        _client.Disconnect();
+    }
+
+    public void SubmitGuessToServer(Godot.Collections.Array<BoggleCoords> boggleCoords)
+    {
+        List<(int, int)> guess = GodotUtils.ConvertBoggleCoordsToTuple(boggleCoords);
+        _ = _client.SubmitGuessToServerAsync(guess);
+    }
+
+    public void SubmitNameToServer(string name)
+    {
+        _ = _client.SubmitNameToServerAsync(name);
     }
 
     public static BoggleClientNode? CreateClientNode(string stringIp, string stringPort)

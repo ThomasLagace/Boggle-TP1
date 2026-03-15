@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://b7276br67b2wa"]
 
-[ext_resource type="Script" uid="uid://crio4w3fi8n11" path="res://scripts/boggle_online/boggle_online_ui.gd" id="1_iblst"]
+[ext_resource type="Script" uid="uid://crio4w3fi8n11" path="res://scripts/boggle_online/boggle_online_game_ui.gd" id="1_iblst"]
 [ext_resource type="PackedScene" uid="uid://dalwpl7fs58kp" path="res://scenes/boggle_scenes/boggle_board_ui.tscn" id="2_e38c2"]
 [ext_resource type="PackedScene" uid="uid://bv6xooffrxoql" path="res://scenes/boggle_scenes/cancel_area.tscn" id="3_v3ct7"]
 

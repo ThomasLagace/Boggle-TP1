@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 GlobalClientConnect="*uid://brwm26bypt1wf"
 GlobalClientConsoleLogging="*uid://duv67pdbnbecv"
+GlobalOnlineUiHandler="*uid://beyn3q621d3uq"
 
 [dotnet]
 

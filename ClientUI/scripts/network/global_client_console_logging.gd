@@ -7,7 +7,7 @@ enum LoggingSeverity {
 }
 
 func _ready() -> void:
-	GlobalClientConnect.on_client_intialized.connect(on_client_initialized)
+	GlobalClientConnect.on_client_initialized.connect(on_client_initialized)
 
 func on_client_initialized(client: BoggleClientNode) -> void:
 	client.OnLogging.connect(on_client_logging)
@@ -24,7 +24,7 @@ func on_client_logging(log_message: String, logging_severity: LoggingSeverity) -
 			prefix = "Error"
 		_:
 			prefix = "Undef"
-	print("LOG[%s]: " % prefix, log)
+	print("LOG[%s]: " % prefix, log_message)
 
 func on_client_receive_message(message: String) -> void:
 	print("Server: ", message)

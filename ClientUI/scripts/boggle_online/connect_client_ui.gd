@@ -18,7 +18,7 @@ func _ready() -> void:
 		GlobalClientConnect.client.SubmitNameToServer(name_edit.text)
 		
 		var scene = on_connect_scene.instantiate()
-		scene.intialize(GlobalClientConnect.client)
+		scene.initialize(GlobalClientConnect.client)
 		get_tree().change_scene_to_node(scene)
 	)
 

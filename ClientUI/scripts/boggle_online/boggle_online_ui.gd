@@ -5,10 +5,15 @@ extends Control
 @export var client_score_label: Label
 @export var opponent_score_label: Label
 @export var opponent_name_label: Label
+@export var current_guess_label: Label
 const END_GAME_UI: PackedScene = preload("res://scenes/end_game_ui.tscn")
 
 var _unix_endtime = 0;
 var _client: BoggleClientNode = null
+
+func _ready() -> void:
+	boggle_board_ui.on_modify_guess.connect(on_modify_guess)
+	current_guess_label.text = ""
 
 func initialize(client: BoggleClientNode) -> void:
 	_client = client
@@ -19,9 +24,9 @@ func initialize(client: BoggleClientNode) -> void:
 func update_timer() -> void:
 	var unix_current_time = int(Time.get_unix_time_from_system())
 	var unix_time_left_secs = _unix_endtime - unix_current_time
-	var seconds = unix_time_left_secs % 60
-	var minutes = floor(float(unix_time_left_secs) / 60)
-	timer_label.text = seconds + ":" + minutes
+	var seconds: int = unix_time_left_secs % 60
+	var minutes: int = floor(float(unix_time_left_secs) / 60)
+	timer_label.text = str(minutes) + ":" + str(seconds)
 
 func on_game_start(endtime: int, opponent_name: String) -> void:
 	boggle_board_ui.initialize(_client.GetBoggleBoard())
@@ -32,6 +37,9 @@ func on_game_start(endtime: int, opponent_name: String) -> void:
 func on_submit_guess(guess: Array[BoggleCoords]) -> void:
 	print("A the guess \"%s\" was submited." % [_client.GetBoggleBoard().GetStringFromCoords(guess)])
 	_client.SubmitGuessToServer(guess)
+
+func on_modify_guess(_guess: Array[BoggleCoords]) -> void:
+	current_guess_label.text = boggle_board_ui.get_current_word()
 
 func on_score_update(client_score: int, opponent_score: int) -> void:
 	client_score_label.text = str(client_score)

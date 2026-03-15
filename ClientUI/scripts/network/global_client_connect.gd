@@ -1,7 +1,7 @@
 extends Node
 
 signal on_client_connect()
-signal on_client_intialized(client: BoggleClientNode)
+signal on_client_initialized(client: BoggleClientNode)
 
 var client: BoggleClientNode = null
 var client_name: String
@@ -18,6 +18,7 @@ func create_client(ip: String, port: String) -> bool:
 	
 	if creating_client_was_success:
 		print("Client created!")
+		on_client_initialized.emit(client)
 	else:
 		print("Failed to create client!")
 	return creating_client_was_success

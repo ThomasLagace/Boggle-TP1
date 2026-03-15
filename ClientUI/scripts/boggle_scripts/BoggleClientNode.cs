@@ -15,6 +15,8 @@ public partial class BoggleClientNode : Node
     [Signal]
     public delegate void OnGameEndEventHandler(int clientScore, int opponentScore);
     [Signal]
+    public delegate void OnOpponentDisconnectedEventHandler();
+    [Signal]
     public delegate void OnReceiveMessageEventHandler(string message);
     [Signal]
     public delegate void OnScoreUpdateEventHandler(int clientScore, int opponentScore);
@@ -39,6 +41,11 @@ public partial class BoggleClientNode : Node
         _client.OnEndGame += (clientScore, opponentScore) =>
         {
             EmitSignal(SignalName.OnGameEnd, clientScore, opponentScore);
+        };
+
+        _client.OnOpponentDisconnected += () =>
+        {
+            EmitSignal(SignalName.OnOpponentDisconnected);
         };
 
         _client.OnReceiveMessage += (message) =>

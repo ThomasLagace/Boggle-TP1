@@ -25,7 +25,7 @@ public class Client
     public event Action<string, LoggingSeverity>? OnLogging;
 
     public event Action<int, int>? OnEndGame;
-    public event Action? OnOpponentDisconected;
+    public event Action? OnOpponentDisconnected;
     public event Action<string>? OnReceiveMessage;
     public event Action<int, int>? OnScoreUpdate;
     public event Action<DateTimeOffset, BoggleBoard, string>? OnGameStart;
@@ -151,7 +151,7 @@ public class Client
 
     private void OpponentDisconectedRoute(OpponentDisconnectedRouteParams routeParams)
     {
-        OnOpponentDisconected?.Invoke();
+        OnOpponentDisconnected?.Invoke();
     }
 
     private void ReceiveMessageRoute(ReceiveMessageRouteParams routeParams)

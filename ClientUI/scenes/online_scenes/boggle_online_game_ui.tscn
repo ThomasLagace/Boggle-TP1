@@ -70,10 +70,10 @@ horizontal_alignment = 1
 
 [node name="ClientScoreLabel" type="Label" parent="." unique_id=1136568849]
 layout_mode = 0
-offset_left = 186.0
-offset_top = 34.0
-offset_right = 274.0
-offset_bottom = 57.0
+offset_left = 207.0
+offset_top = 42.0
+offset_right = 295.0
+offset_bottom = 65.0
 text = "ClientScore"
 
 [node name="OpponentScoreLabel" type="Label" parent="." unique_id=1389627518]

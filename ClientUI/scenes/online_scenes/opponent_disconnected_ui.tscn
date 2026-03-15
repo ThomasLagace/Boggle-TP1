@@ -10,3 +10,38 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_txiof")
+
+[node name="Background" type="Panel" parent="." unique_id=1023894950]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=2052972975]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -427.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LostConnectionLabel" type="Label" parent="CenterContainer" unique_id=726805097]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "L'autre joueur s'est déconnecté"
+
+[node name="CenterContainer2" type="CenterContainer" parent="." unique_id=1739929000]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 368.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ReturnToConnectionButton" type="Button" parent="CenterContainer2" unique_id=813999495]
+layout_mode = 2
+text = "Retourner à la connexion"

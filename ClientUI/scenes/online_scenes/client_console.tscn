@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://cxfanpt5niwxj"]
+
+[ext_resource type="Script" uid="uid://tnejgeqywq66" path="res://scripts/boggle_online/client_console.gd" id="1_e8kjg"]
+
+[node name="ClientConsole" type="PanelContainer" unique_id=979573197]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_e8kjg")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="." unique_id=1423594947]
+layout_mode = 2
+
+[node name="LogContainer" type="VBoxContainer" parent="ScrollContainer" unique_id=648079699]
+layout_mode = 2

@@ -50,8 +50,8 @@ grow_vertical = 2
 script = ExtResource("1_iblst")
 timer_label = NodePath("TimeLeftLabel")
 boggle_board_ui = NodePath("BoggleBoardUI")
-client_score_label = NodePath("HBoxScore/ClientScoreLabel")
-opponent_score_label = NodePath("HBoxScore/OpponentScoreLabel")
+client_score_label = NodePath("CenterContainer/HBoxScore/ClientScoreLabel")
+opponent_score_label = NodePath("CenterContainer/HBoxScore/OpponentScoreLabel")
 opponent_name_label = NodePath("HBoxContainer/OpponentNameLabel")
 current_guess_label = NodePath("CurrentGuessLabel")
 
@@ -68,41 +68,41 @@ offset_bottom = 46.0
 text = "5:00"
 horizontal_alignment = 1
 
-[node name="HBoxScore" type="HBoxContainer" parent="." unique_id=210730740]
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1498128004]
 layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.4939236
-anchor_top = 0.96450615
-anchor_right = 0.5260417
-anchor_bottom = 0.96450615
-offset_left = -213.0
-offset_top = -20.0
-offset_right = 213.0
-offset_bottom = 20.0
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -41.0
+offset_bottom = -18.0
 grow_horizontal = 2
-grow_vertical = 2
+grow_vertical = 0
+
+[node name="HBoxScore" type="HBoxContainer" parent="CenterContainer" unique_id=210730740]
+layout_mode = 2
 theme_override_constants/separation = 12
 metadata/_edit_use_anchors_ = true
 
-[node name="YourScoreLabel" type="Label" parent="HBoxScore" unique_id=1967794131]
+[node name="YourScoreLabel" type="Label" parent="CenterContainer/HBoxScore" unique_id=1967794131]
 layout_mode = 2
 text = "Votre score:"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ClientScoreLabel" type="Label" parent="HBoxScore" unique_id=1136568849]
+[node name="ClientScoreLabel" type="Label" parent="CenterContainer/HBoxScore" unique_id=1136568849]
 layout_mode = 2
 text = "ClientScore"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="OpponentLabel" type="Label" parent="HBoxScore" unique_id=837250895]
+[node name="OpponentLabel" type="Label" parent="CenterContainer/HBoxScore" unique_id=837250895]
 layout_mode = 2
 text = "Score opposant:"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="OpponentScoreLabel" type="Label" parent="HBoxScore" unique_id=1389627518]
+[node name="OpponentScoreLabel" type="Label" parent="CenterContainer/HBoxScore" unique_id=1389627518]
 layout_mode = 2
 text = "OpponentScore"
 horizontal_alignment = 1

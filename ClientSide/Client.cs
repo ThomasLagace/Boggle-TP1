@@ -19,10 +19,11 @@ public class Client
     public IPEndPoint IP { get; private set; }
     public bool IsRunning { get; private set; } = false;
 
-    private CancellationTokenSource? _cts;
+    private CancellationTokenSource _cts = new();
     private Socket _socket;
 
     public event Action<string, LoggingSeverity>? OnLogging;
+    public event Action? OnLostConnection;
 
     public event Action<int, int>? OnEndGame;
     public event Action? OnOpponentDisconnected;
@@ -45,8 +46,6 @@ public class Client
         }
         OnLogging?.Invoke($"Connecting to server at {IP.Address}:{IP.Port}.", LoggingSeverity.Info);
 
-        _cts = new();
-
         try
         {
             await _socket.ConnectAsync(IP, _cts.Token);
@@ -62,10 +61,7 @@ public class Client
             OnLogging?.Invoke("Connection timed out!", LoggingSeverity.Error);
             return;
         }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
+        catch (OperationCanceledException) { return; }
 
         OnLogging?.Invoke($"Connected to server at {IP.Address}:{IP.Port}.", LoggingSeverity.Info);
 
@@ -82,8 +78,8 @@ public class Client
 
         OnLogging?.Invoke("Trying to disconect from server.", LoggingSeverity.Info);
 
-        _cts?.Cancel();
-        _cts = null;
+        _cts.Cancel();
+        _cts = new();
 
         _socket.Shutdown(SocketShutdown.Both);
         _socket.Close();
@@ -95,26 +91,33 @@ public class Client
     {
         SubmitGuessRouteParams routeParams = new(guess);
         Packet packet = new(Route.SubmitGuess, routeParams);
-        await NetworkUtils.SendPacketAsync(_socket, packet, _cts?.Token);
+        await NetworkUtils.SendPacketAsync(_socket, packet, _cts.Token);
     }
 
     public async Task SubmitNameToServerAsync(string name)
     {
         SubmitNameRouteParams routeParams = new(name);
         Packet packet = new(Route.SubmitName, routeParams);
-        await NetworkUtils.SendPacketAsync(_socket, packet, _cts?.Token);
+        await NetworkUtils.SendPacketAsync(_socket, packet, _cts.Token);
     }
 
     private async Task ListenAsync()
     {
         OnLogging?.Invoke("Started listening requests from the server.", LoggingSeverity.Info);
 
-        while (!_cts!.IsCancellationRequested)
+        while (!_cts.IsCancellationRequested)
         {
             Packet packet;
             try
             {
                 packet = await NetworkUtils.ReceivePacketAsync(_socket, _cts.Token);
+            }
+            catch (SocketException ex) when (ex.SocketErrorCode == SocketError.ConnectionReset)
+            {
+                OnLogging?.Invoke("Lost connection with server.", LoggingSeverity.Info);
+                OnLostConnection?.Invoke();
+                Disconnect();
+                return;
             }
             catch (OperationCanceledException) { return; }
 

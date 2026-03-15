@@ -13,7 +13,7 @@ func _ready() -> void:
 	var window = Window.new()
 	window.title = "Client console"
 	window.size = Vector2i(600, 300)
-	window.position = Vector2i(200, 200)
+	window.position = DisplayServer.screen_get_size() / 2 - window.size / 2
 	window.add_child(CLIENT_CONSOLE.instantiate())
 	get_tree().root.call_deferred("add_child", window)
 	window.visible = true

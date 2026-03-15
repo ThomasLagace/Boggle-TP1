@@ -124,9 +124,9 @@ public class Client
                     if (packet.RouteParams is EndGameRouteParams endGameRouteParams)
                         EndGameRoute(endGameRouteParams);
                     break;
-                case Route.OpponnentDisconnected:
+                case Route.OpponentDisconnected:
                     if (packet.RouteParams is OpponentDisconnectedRouteParams opponentDisconnectedRouteParams)
-                        ReceiveMessageRoute(receiveMessageRouteParams);
+                        OpponentDisconectedRoute(opponentDisconnectedRouteParams);
                     break;
                 case Route.ReceiveMessage:
                     if (packet.RouteParams is ReceiveMessageRouteParams receiveMessageRouteParams)

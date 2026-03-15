@@ -2,8 +2,45 @@
 
 [ext_resource type="Script" uid="uid://crio4w3fi8n11" path="res://scripts/boggle_online/boggle_online_ui.gd" id="1_yrg4u"]
 [ext_resource type="PackedScene" uid="uid://dalwpl7fs58kp" path="res://scenes/boggle_board_ui.tscn" id="2_4vr5w"]
+[ext_resource type="PackedScene" uid="uid://bv6xooffrxoql" path="res://scenes/cancel_area.tscn" id="3_4vr5w"]
 
-[node name="BoggleOnlineGameUI" type="Control" unique_id=140386652 node_paths=PackedStringArray("timer_label", "boggle_board_ui", "client_score_label", "opponent_score_label", "opponent_name_label")]
+[sub_resource type="Animation" id="Animation_re2t1"]
+length = 0.001
+
+[sub_resource type="Animation" id="Animation_6fgy4"]
+resource_name = "started_guess_animation"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CancelAreaMargin1:position:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(0.287, 1),
+"update": 0,
+"values": [-250.0, 0.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CancelAreaMargin2:position:x")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(0.287, 1),
+"update": 0,
+"values": [1152.0, 902.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_qym1g"]
+_data = {
+&"RESET": SubResource("Animation_re2t1"),
+&"started_guess_animation": SubResource("Animation_6fgy4")
+}
+
+[node name="BoggleOnlineGameUI" type="Control" unique_id=140386652 node_paths=PackedStringArray("timer_label", "boggle_board_ui", "client_score_label", "opponent_score_label", "opponent_name_label", "current_guess_label")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -12,25 +49,15 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_yrg4u")
 timer_label = NodePath("TimeLeftLabel")
-boggle_board_ui = NodePath("MarginContainer/BoggleBoardUI")
+boggle_board_ui = NodePath("BoggleBoardUI")
 client_score_label = NodePath("ClientScoreLabel")
 opponent_score_label = NodePath("OpponentScoreLabel")
-opponent_name_label = NodePath("Label")
+opponent_name_label = NodePath("OpponentNameLabel")
+current_guess_label = NodePath("CurrentGuessLabel")
 
-[node name="MarginContainer" type="MarginContainer" parent="." unique_id=173087912]
+[node name="BoggleBoardUI" parent="." unique_id=910523621 node_paths=PackedStringArray("cancel_guess_area") instance=ExtResource("2_4vr5w")]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/margin_left = 200
-theme_override_constants/margin_top = 100
-theme_override_constants/margin_right = 200
-theme_override_constants/margin_bottom = 100
-
-[node name="BoggleBoardUI" parent="MarginContainer" unique_id=910523621 instance=ExtResource("2_4vr5w")]
-layout_mode = 2
+cancel_guess_area = [NodePath("../CancelAreaMargin1"), NodePath("../CancelAreaMargin2")]
 
 [node name="TimeLeftLabel" type="Label" parent="." unique_id=395730599]
 layout_mode = 0
@@ -43,24 +70,60 @@ horizontal_alignment = 1
 
 [node name="ClientScoreLabel" type="Label" parent="." unique_id=1136568849]
 layout_mode = 0
-offset_left = 418.0
-offset_top = 45.0
-offset_right = 506.0
-offset_bottom = 68.0
+offset_left = 186.0
+offset_top = 34.0
+offset_right = 274.0
+offset_bottom = 57.0
 text = "ClientScore"
 
 [node name="OpponentScoreLabel" type="Label" parent="." unique_id=1389627518]
 layout_mode = 0
-offset_left = 612.0
-offset_top = 48.0
-offset_right = 733.0
-offset_bottom = 71.0
+offset_left = 845.0
+offset_top = 41.0
+offset_right = 966.0
+offset_bottom = 64.0
 text = "OpponentScore"
 
-[node name="Label" type="Label" parent="." unique_id=1966377775]
+[node name="OpponentNameLabel" type="Label" parent="." unique_id=1966377775]
 layout_mode = 0
 offset_left = 29.0
 offset_top = 589.0
 offset_right = 154.0
 offset_bottom = 612.0
 text = "OpponentName"
+
+[node name="CurrentGuessLabel" type="Label" parent="." unique_id=36678901]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -92.0
+offset_top = -309.0
+offset_right = 33.0
+offset_bottom = -286.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "CurrentGuess"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CancelAreaMargin1" parent="." unique_id=449734565 instance=ExtResource("3_4vr5w")]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.21700001
+anchor_right = -0.21700001
+offset_left = -0.015991211
+offset_right = 249.98401
+
+[node name="CancelAreaMargin2" parent="." unique_id=1721430516 instance=ExtResource("3_4vr5w")]
+layout_mode = 0
+offset_left = 1152.0
+offset_right = 1402.0
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1497424576]
+libraries/ = SubResource("AnimationLibrary_qym1g")
+
+[connection signal="on_ended_guess" from="BoggleBoardUI" to="AnimationPlayer" method="play_backwards" binds= [&"started_guess_animation"]]
+[connection signal="on_started_guess" from="BoggleBoardUI" to="AnimationPlayer" method="play" binds= [&"started_guess_animation"]]

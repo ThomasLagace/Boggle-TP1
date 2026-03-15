@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://doidx1hat37mv"]
 
 [ext_resource type="Script" uid="uid://bdbnucsg0wycg" path="res://scripts/boggle_online/connect_client_ui.gd" id="1_yehkq"]
-[ext_resource type="PackedScene" uid="uid://b7276br67b2wa" path="res://scenes/boggle_online_game_ui.tscn" id="2_ycm1s"]
+[ext_resource type="PackedScene" uid="uid://b7276br67b2wa" path="res://scenes/online_scenes/boggle_online_game_ui.tscn" id="2_ycm1s"]
 
 [node name="ConnectClientUI" type="Control" unique_id=1591821689]
 layout_mode = 3

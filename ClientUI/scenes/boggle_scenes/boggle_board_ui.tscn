@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dalwpl7fs58kp"]
 
 [ext_resource type="Script" uid="uid://d2okef5tg4vjo" path="res://scripts/boggle_board_ui_scripts/boggle_board_ui.gd" id="1_4b8bx"]
-[ext_resource type="PackedScene" uid="uid://dtcyinot5wugk" path="res://scenes/boggle_letter_ui.tscn" id="2_ogc3l"]
+[ext_resource type="PackedScene" uid="uid://dtcyinot5wugk" path="res://scenes/boggle_scenes/boggle_letter_ui.tscn" id="2_ogc3l"]
 
 [node name="BoggleBoardUI" type="Control" unique_id=910523621 node_paths=PackedStringArray("boggle_letter_parent", "line_2d_guess", "line_2d_to_mouse")]
 layout_mode = 3

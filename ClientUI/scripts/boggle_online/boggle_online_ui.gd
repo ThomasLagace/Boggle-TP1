@@ -19,8 +19,8 @@ func initialize(client: BoggleClientNode) -> void:
 func update_timer() -> void:
 	var unix_current_time = int(Time.get_unix_time_from_system())
 	var unix_time_left_secs = _unix_endtime - unix_current_time
-	var seconds = unix_time_left_secs % 60
-	var minutes = floor(float(unix_time_left_secs) / 60)
+	var seconds: int = unix_time_left_secs % 60
+	var minutes: int = floor(float(unix_time_left_secs) / 60)
 	timer_label.text = str(minutes) + ":" + str(seconds)
 
 func on_game_start(endtime: int, opponent_name: String) -> void:

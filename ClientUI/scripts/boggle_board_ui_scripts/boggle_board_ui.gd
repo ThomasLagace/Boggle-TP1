@@ -24,8 +24,8 @@ func _process(_delta: float) -> void:
 	if len(_current_guess_ui) > 0:
 		line_2d_to_mouse.visible = true
 		var last_letter = _current_guess_ui[-1]
-		line_2d_to_mouse.set_point_position(0, last_letter.global_position + last_letter.size * 0.5)
-		line_2d_to_mouse.set_point_position(1, get_viewport().get_mouse_position())
+		line_2d_to_mouse.set_point_position(0, line_2d_to_mouse.to_local(last_letter.global_position + last_letter.size * 0.5))
+		line_2d_to_mouse.set_point_position(1, line_2d_to_mouse.to_local(get_viewport().get_mouse_position()))
 	else:
 		line_2d_to_mouse.visible = false
 
@@ -84,7 +84,7 @@ func add_guess(letter_ui: BoggleLetterUI) -> void:
 		_current_guess_ui.assign(new_ui_guess)
 		on_modify_guess.emit(get_current_guess_coords())
 
-		line_2d_guess.add_point(letter_ui.global_position + letter_ui.size * 0.5)
+		line_2d_guess.add_point(line_2d_guess.to_local(letter_ui.global_position + letter_ui.size * 0.5))
 		if len(new_ui_guess) == 1:
 			on_started_guess.emit()
 

@@ -1,0 +1,47 @@
+[gd_scene format=3 uid="uid://r1oyu4eg1oj6"]
+
+[ext_resource type="Script" uid="uid://cdqlji2pcmetu" path="res://scripts/boggle_online/lost_connection_ui.gd" id="1_w4or5"]
+
+[node name="LostConnectionUI" type="Control" unique_id=1396674708]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_w4or5")
+
+[node name="BackgroundPanel" type="Panel" parent="." unique_id=726174085]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=859772087]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -427.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LostConnectionLabel" type="Label" parent="CenterContainer" unique_id=1329717811]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Vous avez perdu la connexion"
+
+[node name="CenterContainer2" type="CenterContainer" parent="." unique_id=982126580]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 368.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ReturnToConnectionButton" type="Button" parent="CenterContainer2" unique_id=1838165925]
+layout_mode = 2
+text = "Retourner à la connexion"

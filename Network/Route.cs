@@ -4,7 +4,7 @@ public enum Route
 {
     //Client
     StartGame,
-    OpponnentDisconnected,
+    OpponentDisconnected,
     ScoreUpdate,
     ReceiveMessage,
     EndGame,

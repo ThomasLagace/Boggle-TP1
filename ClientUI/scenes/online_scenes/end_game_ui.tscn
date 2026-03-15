@@ -1,0 +1,97 @@
+[gd_scene format=3 uid="uid://b7gobrut8p2cj"]
+
+[ext_resource type="Script" uid="uid://d3rys1bol3umk" path="res://scripts/boggle_online/end_game_ui.gd" id="1_520i4"]
+
+[node name="EndGameUI" type="Control" unique_id=189466381]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_520i4")
+
+[node name="BackgroundPanel" type="Panel" parent="." unique_id=2003320469]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=792394844]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -491.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CenterContainer" unique_id=1612795761]
+layout_mode = 2
+
+[node name="WinnerLabel" type="Label" parent="CenterContainer/HBoxContainer" unique_id=1753114694]
+layout_mode = 2
+theme_override_font_sizes/font_size = 34
+text = "WinnerLabel"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="WonLabel" type="Label" parent="CenterContainer/HBoxContainer" unique_id=2090933698]
+layout_mode = 2
+theme_override_font_sizes/font_size = 34
+text = "a gagné!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CenterContainer2" type="CenterContainer" parent="." unique_id=1124160298]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 188.0
+offset_bottom = -217.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CenterContainer2" unique_id=827954862]
+layout_mode = 2
+theme_override_constants/separation = 27
+
+[node name="YourScoreLabel" type="Label" parent="CenterContainer2/HBoxContainer" unique_id=390673327]
+layout_mode = 2
+text = "YourScoreLabel"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ToLabel" type="Label" parent="CenterContainer2/HBoxContainer" unique_id=736782309]
+layout_mode = 2
+text = "à"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="OpponentScoreLabel" type="Label" parent="CenterContainer2/HBoxContainer" unique_id=762722186]
+layout_mode = 2
+text = "OpponentScoreLabel"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PointsLabel" type="Label" parent="CenterContainer2/HBoxContainer" unique_id=1846687140]
+layout_mode = 2
+text = "points"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CenterContainer3" type="CenterContainer" parent="." unique_id=469382312]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 368.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ReturnToConnectionButton" type="Button" parent="CenterContainer3" unique_id=534286812]
+layout_mode = 2
+text = "Retourner à la connexion"

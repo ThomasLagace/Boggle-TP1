@@ -19,12 +19,14 @@ public class Client
     public IPEndPoint IP { get; private set; }
     public bool IsRunning { get; private set; } = false;
 
-    private CancellationTokenSource? _cts;
+    private CancellationTokenSource _cts = new();
     private Socket _socket;
 
     public event Action<string, LoggingSeverity>? OnLogging;
+    public event Action? OnLostConnection;
 
     public event Action<int, int>? OnEndGame;
+    public event Action? OnOpponentDisconnected;
     public event Action<string>? OnReceiveMessage;
     public event Action<int, int>? OnScoreUpdate;
     public event Action<DateTimeOffset, BoggleBoard, string>? OnGameStart;
@@ -39,12 +41,10 @@ public class Client
     {
         if (IsRunning)
         {
-            OnLogging?.Invoke("Trying to connect with an already opened connection.", LoggingSeverity.Warning);
+            OnLogging?.Invoke("Tentative de connexion alors qu'une connexion est déjà ouverte.", LoggingSeverity.Warning);
             return;
         }
-        OnLogging?.Invoke($"Connecting to server at {IP.Address}:{IP.Port}.", LoggingSeverity.Info);
-
-        _cts = new();
+        OnLogging?.Invoke($"Connexion au serveur à {IP.Address}:{IP.Port}.", LoggingSeverity.Info);
 
         try
         {
@@ -53,20 +53,17 @@ public class Client
         }
         catch (SocketException ex) when (ex.SocketErrorCode == SocketError.ConnectionRefused)
         {
-            OnLogging?.Invoke("Connection refused!", LoggingSeverity.Error);
+            OnLogging?.Invoke("Connexion refusée !", LoggingSeverity.Error);
             return;
         }
         catch (SocketException ex) when (ex.SocketErrorCode == SocketError.TimedOut)
         {
-            OnLogging?.Invoke("Connection timed out!", LoggingSeverity.Error);
+            OnLogging?.Invoke("Délai de connexion dépassé !", LoggingSeverity.Error);
             return;
         }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
+        catch (OperationCanceledException) { return; }
 
-        OnLogging?.Invoke($"Connected to server at {IP.Address}:{IP.Port}.", LoggingSeverity.Info);
+        OnLogging?.Invoke($"Connecté au serveur à {IP.Address}:{IP.Port}.", LoggingSeverity.Info);
 
         _ = ListenAsync();
     }
@@ -75,53 +72,69 @@ public class Client
     {
         if (!IsRunning)
         {
-            OnLogging?.Invoke("Trying to disconnect from a server without an opened connection.", LoggingSeverity.Warning);
+            OnLogging?.Invoke("Tentative de déconnexion sans connexion ouverte.", LoggingSeverity.Warning);
             return;
         }
 
-        OnLogging?.Invoke("Trying to disconect from server.", LoggingSeverity.Info);
+        OnLogging?.Invoke("Tentative de déconnexion du serveur.", LoggingSeverity.Info);
 
-        _cts?.Cancel();
-        _cts = null;
+        _cts.Cancel();
+        _cts = new();
 
         _socket.Shutdown(SocketShutdown.Both);
         _socket.Close();
 
-        OnLogging?.Invoke("Disconnected from server.", LoggingSeverity.Info);
+        OnLogging?.Invoke("Déconnecté du serveur.", LoggingSeverity.Info);
     }
 
     public async Task SubmitGuessToServerAsync(List<(int, int)> guess)
     {
         SubmitGuessRouteParams routeParams = new(guess);
         Packet packet = new(Route.SubmitGuess, routeParams);
-        await NetworkUtils.SendPacketAsync(_socket, packet, _cts?.Token);
+        OnLogging?.Invoke($"Envoie d'un 'guess' au serveur: {guess}.", LoggingSeverity.Info);
+        await NetworkUtils.SendPacketAsync(_socket, packet, _cts.Token);
     }
 
     public async Task SubmitNameToServerAsync(string name)
     {
         SubmitNameRouteParams routeParams = new(name);
         Packet packet = new(Route.SubmitName, routeParams);
-        await NetworkUtils.SendPacketAsync(_socket, packet, _cts?.Token);
+        OnLogging?.Invoke($"Envoie du nom au serveur: {name}.", LoggingSeverity.Info);
+        await NetworkUtils.SendPacketAsync(_socket, packet, _cts.Token);
     }
 
     private async Task ListenAsync()
     {
-        OnLogging?.Invoke("Started listening requests from the server.", LoggingSeverity.Info);
+        OnLogging?.Invoke("Début de l'écoute des requêtes du serveur.", LoggingSeverity.Info);
 
-        while (!_cts!.IsCancellationRequested)
+        while (!_cts.IsCancellationRequested)
         {
             Packet packet;
             try
             {
+                OnLogging?.Invoke("En attente d'un packet du serveur.", LoggingSeverity.Info);
                 packet = await NetworkUtils.ReceivePacketAsync(_socket, _cts.Token);
             }
+            catch (SocketException ex) when (ex.SocketErrorCode == SocketError.ConnectionReset)
+            {
+                OnLogging?.Invoke("Connexion au serveur perdue.", LoggingSeverity.Info);
+                OnLostConnection?.Invoke();
+                Disconnect();
+                return;
+            }
             catch (OperationCanceledException) { return; }
+
+            OnLogging?.Invoke($"La route {packet.Route} a été exécutée avec les paramètre {packet.RouteParams}.", LoggingSeverity.Info);
 
             switch (packet.Route)
             {
                 case Route.EndGame:
                     if (packet.RouteParams is EndGameRouteParams endGameRouteParams)
                         EndGameRoute(endGameRouteParams);
+                    break;
+                case Route.OpponentDisconnected:
+                    if (packet.RouteParams is OpponentDisconnectedRouteParams opponentDisconnectedRouteParams)
+                        OpponentDisconectedRoute(opponentDisconnectedRouteParams);
                     break;
                 case Route.ReceiveMessage:
                     if (packet.RouteParams is ReceiveMessageRouteParams receiveMessageRouteParams)
@@ -142,6 +155,11 @@ public class Client
     private void EndGameRoute(EndGameRouteParams routeParams)
     {
         OnEndGame?.Invoke(routeParams.ClientScore, routeParams.OpponentScore);
+    }
+
+    private void OpponentDisconectedRoute(OpponentDisconnectedRouteParams routeParams)
+    {
+        OnOpponentDisconnected?.Invoke();
     }
 
     private void ReceiveMessageRoute(ReceiveMessageRouteParams routeParams)

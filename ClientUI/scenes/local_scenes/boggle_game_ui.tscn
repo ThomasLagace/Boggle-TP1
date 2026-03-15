@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://snmfqewwhrg7"]
 
-[ext_resource type="Script" uid="uid://cldqnocdi0r44" path="res://scripts/boggle_local/boggle_game_ui.gd" id="1_jqj7l"]
-[ext_resource type="PackedScene" uid="uid://dalwpl7fs58kp" path="res://scenes/boggle_board_ui.tscn" id="2_0au77"]
-[ext_resource type="PackedScene" uid="uid://bv6xooffrxoql" path="res://scenes/cancel_area.tscn" id="3_re2t1"]
+[ext_resource type="Script" uid="uid://cldqnocdi0r44" path="res://scripts/boggle_local/boggle_game_ui.gd" id="1_6httr"]
+[ext_resource type="PackedScene" uid="uid://dalwpl7fs58kp" path="res://scenes/boggle_scenes/boggle_board_ui.tscn" id="2_bcpoj"]
+[ext_resource type="PackedScene" uid="uid://bv6xooffrxoql" path="res://scenes/boggle_scenes/cancel_area.tscn" id="3_2pgop"]
 
 [sub_resource type="Animation" id="Animation_re2t1"]
 length = 0.001
@@ -47,11 +47,11 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_jqj7l")
+script = ExtResource("1_6httr")
 boggle_board_ui = NodePath("BoggleBoardUI")
 current_guess_label = NodePath("CurrentWordLabel")
 
-[node name="BoggleBoardUI" parent="." unique_id=793989032 node_paths=PackedStringArray("cancel_guess_area") instance=ExtResource("2_0au77")]
+[node name="BoggleBoardUI" parent="." unique_id=793989032 node_paths=PackedStringArray("cancel_guess_area") instance=ExtResource("2_bcpoj")]
 layout_mode = 1
 cancel_guess_area = [NodePath("../CancelAreaMargin1"), NodePath("../CancelAreaMargin2")]
 
@@ -63,7 +63,7 @@ offset_right = 616.0
 offset_bottom = 34.0
 text = "CurrentWord"
 
-[node name="CancelAreaMargin1" parent="." unique_id=449734565 instance=ExtResource("3_re2t1")]
+[node name="CancelAreaMargin1" parent="." unique_id=449734565 instance=ExtResource("3_2pgop")]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = -0.21700001
@@ -71,7 +71,7 @@ anchor_right = -0.21700001
 offset_left = -0.015991211
 offset_right = 249.98401
 
-[node name="CancelAreaMargin2" parent="." unique_id=455521002 instance=ExtResource("3_re2t1")]
+[node name="CancelAreaMargin2" parent="." unique_id=455521002 instance=ExtResource("3_2pgop")]
 layout_mode = 0
 offset_left = 1152.0
 offset_right = 1402.0

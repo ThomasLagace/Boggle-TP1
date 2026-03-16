@@ -225,7 +225,7 @@ namespace ServerSide
 
                             Console.WriteLine($"Both {player.Name} [{playerSocket.RemoteEndPoint}] and {opponent.Name} [{opponentSocket.RemoteEndPoint}] have attempted guess '{word}'.");
 
-                            return;
+                            continue;
                         }
 
                         player.Match.DiscoveredWords.Add(word, player);

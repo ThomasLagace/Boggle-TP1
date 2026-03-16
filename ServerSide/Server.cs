@@ -157,11 +157,13 @@ namespace ServerSide
                 await Task.WhenAll(
                 NetworkUtils.SendPacketAsync(player1Socket, startGamePacket1, _cts.Token),
                 NetworkUtils.SendPacketAsync(player2Socket, startGamePacket2, _cts.Token)
-            );
+                );
             }
             catch (SocketException ex) when (ex.SocketErrorCode == SocketError.ConnectionReset)
             {
                 Console.WriteLine("Connection with client endpoint was reset.");
+
+                await NotifyOpponentDisconnectionAsync(player1Socket, player2Socket);
 
                 return;
             }
@@ -175,6 +177,7 @@ namespace ServerSide
         {
             if (_clients.TryGetValue(playerSocket, out BogglePlayer player))
             {
+                Socket? opponentSocket = null;
                 // Listen for guesses until game ends
                 while (!gameCts.IsCancellationRequested)
                 {
@@ -210,7 +213,7 @@ namespace ServerSide
                         // Penalize shared guesses + notify clients
                         if (player.Match.DiscoveredWords.TryGetValue(word, out BogglePlayer? opponent))
                         {
-                            if (_clients.TryGetKey(opponent, out Socket opponentSocket))
+                            if (_clients.TryGetKey(opponent, out opponentSocket))
                             {
                                 ReceiveMessageRouteParams warningParams = new(Warning.SharedGuess(word));
                                 Packet sharedGuessPacket = new(Route.ReceiveMessage, warningParams);
@@ -235,14 +238,16 @@ namespace ServerSide
                     {
                         Console.WriteLine("Connection with client endpoint was reset.");
 
-                        return; 
+                        await NotifyOpponentDisconnectionAsync(playerSocket, opponentSocket!);
+
+                        return;
                     }
                     catch (OperationCanceledException) { return; }
                 }
             }
         }
 
-        private void HandleScoreUpdate(Socket player1Socket, Socket player2Socket)
+        private async void HandleScoreUpdate(Socket player1Socket, Socket player2Socket)
         {
             BogglePlayer player1 = _clients[player1Socket];
             BogglePlayer player2 = _clients[player2Socket];
@@ -263,6 +268,8 @@ namespace ServerSide
             catch (SocketException ex) when (ex.SocketErrorCode == SocketError.ConnectionReset)
             {
                 Console.WriteLine("Connection with client endpoint was reset.");
+
+                await NotifyOpponentDisconnectionAsync(player1Socket, player2Socket);
 
                 return;
             }
@@ -294,10 +301,31 @@ namespace ServerSide
             {
                 Console.WriteLine("Connection with client endpoint was reset.");
 
+                await NotifyOpponentDisconnectionAsync(player1Socket, player2Socket);
+
                 return;
             }
 
             Console.WriteLine("Game ended.");
+        }
+
+        private async Task NotifyOpponentDisconnectionAsync(Socket player1Socket, Socket player2Socket)
+        {
+            OpponentDisconnectedRouteParams opponentDisconnectedParams = new();
+            Packet opponentDisconnectedPacket = new(Route.OpponentDisconnected, opponentDisconnectedParams);
+
+            try
+            {
+                await NetworkUtils.SendPacketAsync(player1Socket, opponentDisconnectedPacket, _cts.Token);
+            }
+            catch (SocketException ex) when (ex.SocketErrorCode == SocketError.ConnectionReset) 
+            {
+                try
+                {
+                    await NetworkUtils.SendPacketAsync(player2Socket, opponentDisconnectedPacket, _cts.Token);
+                }
+                catch (SocketException ex2) when (ex2.SocketErrorCode == SocketError.ConnectionReset) { }
+            }
         }
     }
 }

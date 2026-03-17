@@ -1,5 +1,7 @@
 ﻿using Network.ClientRoutes;
 using Network.ServerRoutes;
+using System.Reflection;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace Network;
@@ -14,4 +16,19 @@ namespace Network;
 [JsonDerivedType(typeof(SubmitNameRouteParams), "server_submit_name_route")]
 public abstract class RouteParams
 {
+    public override string ToString()
+    {
+        Type type = GetType();
+
+        PropertyInfo[] properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+        StringBuilder sb = new();
+
+        foreach (PropertyInfo property in properties)
+        {
+            sb.AppendLine(property.Name + ": " + property.GetValue(this));
+        }
+
+        return sb.ToString();
+    }
 }

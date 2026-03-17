@@ -91,7 +91,8 @@ public class Client
     {
         SubmitGuessRouteParams routeParams = new(guess);
         Packet packet = new(Route.SubmitGuess, routeParams);
-        OnLogging?.Invoke($"Envoie d'un 'guess' au serveur: {guess}.", LoggingSeverity.Info);
+        string formated = string.Join(", ", guess.Select(t => $"({t.Item1}, {t.Item2})"));
+        OnLogging?.Invoke($"Envoie d'un 'guess' au serveur: {formated}.", LoggingSeverity.Info);
         await NetworkUtils.SendPacketAsync(_socket, packet, _cts.Token);
     }
 

@@ -40,7 +40,7 @@ func update_timer() -> void:
 	var unix_time_left_secs = _unix_endtime - unix_current_time
 	var seconds: int = unix_time_left_secs % 60
 	var minutes: int = floor(float(unix_time_left_secs) / 60)
-	timer_label.text = str(minutes) + ":" + str(seconds)
+	timer_label.text = "%d:%02d" % [minutes, seconds]
 
 func _process(_delta: float) -> void:
 	update_timer()

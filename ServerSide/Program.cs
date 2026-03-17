@@ -10,6 +10,7 @@ namespace ServerSide
             Server server = new Server(endpoint);
 
             _ = server.StartupAsync();
+            Console.ReadLine();
         }
     }
 }

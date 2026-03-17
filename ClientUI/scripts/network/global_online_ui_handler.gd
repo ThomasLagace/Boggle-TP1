@@ -11,7 +11,8 @@ func _ready() -> void:
 	GlobalClientConnect.on_client_initialized.connect(on_client_initialized)
 
 func on_client_initialized(client: BoggleClientNode) -> void:
-	GlobalClientConnect.on_client_connect.connect(on_client_connect)
+	if not GlobalClientConnect.on_client_connect.is_connected(on_client_connect):
+		GlobalClientConnect.on_client_connect.connect(on_client_connect)
 	client.OnGameStart.connect(on_game_start)
 	client.OnLostConnection.connect(on_lost_connection)
 

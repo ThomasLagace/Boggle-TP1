@@ -18,5 +18,6 @@ func on_connect_button_press() -> void:
 		return
 	var ip = address_edit.text
 	var port = port_edit.text
+	GlobalClientConnect.client_name = name_edit.text
 	if GlobalClientConnect.create_client(ip, port):
 		GlobalClientConnect.connect_client()

@@ -63,17 +63,17 @@ namespace ServerSide
 
                     await StartGameAsync(queuedMatch, socketPlayer1, socketPlayer2);
 
-                    _ = HandleGameplayAsync(socketPlayer1, queuedMatch.GameCts);
-                    _ = HandleGameplayAsync(socketPlayer2, queuedMatch.GameCts);
+                    _ = HandleGameplayAsync(socketPlayer1, socketPlayer2, queuedMatch.GameCts);
+                    _ = HandleGameplayAsync(socketPlayer2, socketPlayer1, queuedMatch.GameCts);
 
                     // End match handling when clock runs out + notify clients
                     queuedMatch.OnGameOver += async () => await HandleGameOverAsync(socketPlayer1, socketPlayer2);
                 }
-                catch (SocketException ex) when (ex.SocketErrorCode == SocketError.Interrupted) 
+                catch (SocketException ex) when (ex.SocketErrorCode == SocketError.Interrupted)
                 {
                     Console.WriteLine("Connection handshake was interrupted.");
 
-                    break; 
+                    break;
                 }
                 catch (OperationCanceledException) { }
             }
@@ -173,11 +173,10 @@ namespace ServerSide
             Console.WriteLine("Game started.");
         }
 
-        private async Task HandleGameplayAsync(Socket playerSocket, CancellationTokenSource gameCts)
+        private async Task HandleGameplayAsync(Socket playerSocket, Socket opponentSocket, CancellationTokenSource gameCts)
         {
             if (_clients.TryGetValue(playerSocket, out BogglePlayer player))
             {
-                Socket? opponentSocket = null;
                 // Listen for guesses until game ends
                 while (!gameCts.IsCancellationRequested)
                 {
@@ -213,16 +212,13 @@ namespace ServerSide
                         // Penalize shared guesses + notify clients
                         if (player.Match.DiscoveredWords.TryGetValue(word, out BogglePlayer? opponent))
                         {
-                            if (_clients.TryGetKey(opponent, out opponentSocket))
-                            {
-                                ReceiveMessageRouteParams warningParams = new(Warning.SharedGuess(word));
-                                Packet sharedGuessPacket = new(Route.ReceiveMessage, warningParams);
+                            ReceiveMessageRouteParams warningParams = new(Warning.SharedGuess(word));
+                            Packet sharedGuessPacket = new(Route.ReceiveMessage, warningParams);
 
-                                await Task.WhenAll(
-                                    NetworkUtils.SendPacketAsync(playerSocket, sharedGuessPacket, _cts.Token),
-                                    NetworkUtils.SendPacketAsync(opponentSocket, sharedGuessPacket, _cts.Token)
-                                );
-                            }
+                            await Task.WhenAll(
+                                NetworkUtils.SendPacketAsync(playerSocket, sharedGuessPacket, _cts.Token),
+                                NetworkUtils.SendPacketAsync(opponentSocket, sharedGuessPacket, _cts.Token)
+                            );
 
                             opponent.Score -= points;
 
@@ -238,7 +234,7 @@ namespace ServerSide
                     {
                         Console.WriteLine("Connection with client endpoint was reset.");
 
-                        await NotifyOpponentDisconnectionAsync(playerSocket, opponentSocket!);
+                        await NotifyOpponentDisconnectionAsync(playerSocket, opponentSocket);
 
                         return;
                     }
@@ -318,7 +314,7 @@ namespace ServerSide
             {
                 await NetworkUtils.SendPacketAsync(player1Socket, opponentDisconnectedPacket, _cts.Token);
             }
-            catch (SocketException ex) when (ex.SocketErrorCode == SocketError.ConnectionReset) 
+            catch (SocketException ex) when (ex.SocketErrorCode == SocketError.ConnectionReset)
             {
                 try
                 {

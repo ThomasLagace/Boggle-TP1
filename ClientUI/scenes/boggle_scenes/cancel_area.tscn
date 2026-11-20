@@ -1,28 +1,23 @@
 [gd_scene format=3 uid="uid://bv6xooffrxoql"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6x8gt"]
-bg_color = Color(0.8862745, 0.13333334, 0.13333334, 0.3647059)
-border_width_left = 16
-border_width_top = 16
-border_width_right = 16
-border_width_bottom = 16
-border_color = Color(0.7490196, 0.62352943, 0.07058824, 0.52156866)
-border_blend = true
-corner_radius_top_left = 20
-corner_radius_top_right = 20
-corner_radius_bottom_right = 20
-corner_radius_bottom_left = 20
+[ext_resource type="Script" path="res://scripts/boggle_board_ui_scripts/cancel_area.gd" id="1_cancel"]
 
-[node name="CancelAreaMargin" type="MarginContainer" unique_id=449734565]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxFlat_6x8gt"]
+
+[node name="CancelAreaMargin" type="MarginContainer" unique_id=449734565 node_paths=PackedStringArray("label")]
 offset_left = -250.0
 offset_bottom = 648.0
+mouse_filter = 2
 theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 20
+theme_override_constants/margin_top = 112
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
+script = ExtResource("1_cancel")
+label = NodePath("CancelArea/CenterContainer/Label")
 
 [node name="CancelArea" type="Panel" parent="." unique_id=2146475864]
 layout_mode = 2
+mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_6x8gt")
 
 [node name="CenterContainer" type="CenterContainer" parent="CancelArea" unique_id=576451947]
@@ -32,11 +27,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 
 [node name="Label" type="Label" parent="CancelArea/CenterContainer" unique_id=1575213538]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.33438456, 0, 0.6156863)
-theme_override_font_sizes/font_size = 20
 text = "ANNULER"
 horizontal_alignment = 1
 vertical_alignment = 1

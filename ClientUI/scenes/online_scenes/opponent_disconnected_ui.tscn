@@ -1,6 +1,8 @@
 [gd_scene format=3 uid="uid://dscgslbxm0bc5"]
 
-[ext_resource type="Script" uid="uid://cx13e0x3mkbqi" path="res://scripts/boggle_online/opponent_disconnected_ui.gd" id="1_txiof"]
+[ext_resource type="Script" uid="uid://cx13e0x3mkbqi" path="res://scripts/boggle_online/opponent_disconnected_ui.gd" id="1_s"]
+[ext_resource type="Script" path="res://scripts/ui/metro_backdrop.gd" id="2_bd"]
+[ext_resource type="Script" path="res://scripts/ui/metro_scene_art.gd" id="3_art"]
 
 [node name="OpponentDisconnectedUI" type="Control" unique_id=2047201568]
 layout_mode = 3
@@ -9,39 +11,60 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_txiof")
+script = ExtResource("1_s")
 
-[node name="Background" type="Panel" parent="." unique_id=1023894950]
+[node name="Background" type="Control" parent="." unique_id=1023894950]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_bd")
+intensity = 0.4
+
+[node name="Broken" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -380.0
+offset_top = 110.0
+offset_right = 380.0
+offset_bottom = 290.0
+grow_horizontal = 2
+mouse_filter = 2
+script = ExtResource("3_art")
+mode = 3
 
 [node name="CenterContainer" type="CenterContainer" parent="." unique_id=2052972975]
 layout_mode = 1
-anchors_preset = 15
+anchors_preset = 10
 anchor_right = 1.0
-anchor_bottom = 1.0
-offset_bottom = -427.0
+offset_top = 320.0
+offset_bottom = 400.0
 grow_horizontal = 2
-grow_vertical = 2
+mouse_filter = 2
 
 [node name="LostConnectionLabel" type="Label" parent="CenterContainer" unique_id=726805097]
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 text = "L'autre joueur s'est déconnecté"
 
 [node name="CenterContainer2" type="CenterContainer" parent="." unique_id=1739929000]
 layout_mode = 1
-anchors_preset = 15
+anchors_preset = 12
+anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = 368.0
+offset_top = -170.0
+offset_bottom = -90.0
 grow_horizontal = 2
-grow_vertical = 2
+grow_vertical = 0
+mouse_filter = 2
 
 [node name="ReturnToConnectionButton" type="Button" parent="CenterContainer2" unique_id=813999495]
+custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
+mouse_default_cursor_shape = 2
 text = "Retourner à la connexion"

@@ -2,13 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bljlpwlawpksa" path="res://scripts/boggle_board_ui_scripts/boggle_letter_ui.gd" id="1_bware"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bye8i"]
-bg_color = Color(0.6, 0.6, 0.6, 0.4627451)
-corner_radius_top_left = 20
-corner_radius_top_right = 20
-corner_radius_bottom_right = 20
-corner_radius_bottom_left = 20
-corner_detail = 12
+[sub_resource type="StyleBoxEmpty" id="StyleBoxFlat_bye8i"]
 
 [node name="BoggleLetter" type="Panel" unique_id=86241367 node_paths=PackedStringArray("letter_label")]
 anchors_preset = 15
@@ -18,6 +12,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+mouse_default_cursor_shape = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_bye8i")
 script = ExtResource("1_bware")
 letter_label = NodePath("CenterContainer/LetterLabel")

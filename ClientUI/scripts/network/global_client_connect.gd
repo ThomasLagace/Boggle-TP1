@@ -1,6 +1,7 @@
 extends Node
 
 signal on_client_connect()
+signal on_client_connect_failed()
 signal on_client_initialized(client: BoggleClientNode)
 
 var client: BoggleClientNode = null
@@ -36,6 +37,7 @@ func on_client_connect_callback(connected):
 		on_client_connect.emit()
 	else:
 		print("Failed to connect")
+		on_client_connect_failed.emit()
 
 func dispose() -> void:
 	client.DisconnectSocket()

@@ -18,7 +18,7 @@ func on_client_initialized(client: BoggleClientNode) -> void:
 
 func on_client_connect() -> void:
 	var waiting_scene = WAITING_OTHER_PLAYER_UI.instantiate()
-	get_tree().change_scene_to_node(waiting_scene)
+	Metro.go_to_node(waiting_scene)
 
 func on_game_start(unix_endtime: int, opponent_name: String) -> void:
 	GlobalClientConnect.opponent_name = opponent_name
@@ -35,17 +35,17 @@ func on_game_start(unix_endtime: int, opponent_name: String) -> void:
 
 	game_scene.on_submit_guess.connect(GlobalClientConnect.client.SubmitGuessToServer)
 
-	get_tree().change_scene_to_node(game_scene)
+	Metro.go_to_node(game_scene)
 
 func on_lost_connection() -> void:
 	GlobalClientConnect.dispose()
 	var lost_connection_scene = LOST_CONNECTION_UI.instantiate()
-	get_tree().change_scene_to_node(lost_connection_scene)
+	Metro.go_to_node(lost_connection_scene)
 
 func on_opponent_disconnected() -> void:
 	GlobalClientConnect.dispose()
 	var end_game_scene = OPPONENT_DISCONNECTED_UI.instantiate()
-	get_tree().change_scene_to_node(end_game_scene)
+	Metro.go_to_node(end_game_scene)
 
 func on_game_end(client_score: int, opponent_score: int) -> void:
 	var winner_name: String
@@ -60,4 +60,4 @@ func on_game_end(client_score: int, opponent_score: int) -> void:
 
 	GlobalClientConnect.dispose()
 
-	get_tree().change_scene_to_node(end_game_scene)
+	Metro.go_to_node(end_game_scene)

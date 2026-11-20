@@ -3,12 +3,16 @@
 [ext_resource type="Script" uid="uid://cldqnocdi0r44" path="res://scripts/boggle_local/boggle_game_ui.gd" id="1_6httr"]
 [ext_resource type="PackedScene" uid="uid://dalwpl7fs58kp" path="res://scenes/boggle_scenes/boggle_board_ui.tscn" id="2_bcpoj"]
 [ext_resource type="PackedScene" uid="uid://bv6xooffrxoql" path="res://scenes/boggle_scenes/cancel_area.tscn" id="3_2pgop"]
+[ext_resource type="Script" path="res://scripts/ui/metro_backdrop.gd" id="4_bd"]
+[ext_resource type="Script" path="res://scripts/ui/route_strip.gd" id="5_rs"]
+[ext_resource type="Script" path="res://scripts/ui/departure_board.gd" id="6_db"]
 
 [sub_resource type="Animation" id="Animation_re2t1"]
 length = 0.001
 
 [sub_resource type="Animation" id="Animation_6fgy4"]
 resource_name = "started_guess_animation"
+length = 0.32
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -16,8 +20,8 @@ tracks/0/path = NodePath("CancelAreaMargin1:position:x")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 1),
-"transitions": PackedFloat32Array(0.287, 1),
+"times": PackedFloat32Array(0, 0.32),
+"transitions": PackedFloat32Array(0.25, 1),
 "update": 0,
 "values": [-250.0, 0.0]
 }
@@ -28,8 +32,8 @@ tracks/1/path = NodePath("CancelAreaMargin2:position:x")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0, 1),
-"transitions": PackedFloat32Array(0.287, 1),
+"times": PackedFloat32Array(0, 0.32),
+"transitions": PackedFloat32Array(0.25, 1),
 "update": 0,
 "values": [1152.0, 902.0]
 }
@@ -40,7 +44,7 @@ _data = {
 &"started_guess_animation": SubResource("Animation_6fgy4")
 }
 
-[node name="BoggleGameUi" type="Control" unique_id=1019244804 node_paths=PackedStringArray("boggle_board_ui", "current_guess_label")]
+[node name="BoggleGameUi" type="Control" unique_id=1019244804 node_paths=PackedStringArray("boggle_board_ui", "current_guess_label", "route_you")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -49,19 +53,64 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_6httr")
 boggle_board_ui = NodePath("BoggleBoardUI")
-current_guess_label = NodePath("CurrentWordLabel")
+current_guess_label = NodePath("DepartureBoard/Margin/CurrentWordLabel")
+route_you = NodePath("RouteYou")
+
+[node name="Backdrop" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("4_bd")
+intensity = 0.3
+
+[node name="RouteYou" type="Control" parent="."]
+layout_mode = 0
+offset_left = 26.0
+offset_top = 116.0
+offset_right = 276.0
+offset_bottom = 628.0
+mouse_filter = 2
+script = ExtResource("5_rs")
 
 [node name="BoggleBoardUI" parent="." unique_id=793989032 node_paths=PackedStringArray("cancel_guess_area") instance=ExtResource("2_bcpoj")]
 layout_mode = 1
+mouse_filter = 2
 cancel_guess_area = [NodePath("../CancelAreaMargin1"), NodePath("../CancelAreaMargin2")]
 
-[node name="CurrentWordLabel" type="Label" parent="." unique_id=1273988280]
-layout_mode = 0
-offset_left = 514.0
-offset_top = 11.0
-offset_right = 616.0
-offset_bottom = 34.0
+[node name="DepartureBoard" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 20.0
+offset_top = 14.0
+offset_right = -20.0
+offset_bottom = 94.0
+grow_horizontal = 2
+script = ExtResource("6_db")
+
+[node name="Margin" type="MarginContainer" parent="DepartureBoard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 10
+
+[node name="CurrentWordLabel" type="Label" parent="DepartureBoard/Margin" unique_id=1273988280]
+layout_mode = 2
 text = "CurrentWord"
+horizontal_alignment = 1
+vertical_alignment = 1
+clip_text = true
 
 [node name="CancelAreaMargin1" parent="." unique_id=449734565 instance=ExtResource("3_2pgop")]
 layout_mode = 1

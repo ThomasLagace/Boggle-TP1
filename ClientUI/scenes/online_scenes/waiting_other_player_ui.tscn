@@ -1,30 +1,58 @@
 [gd_scene format=3 uid="uid://dglgcfqtkw2x1"]
 
-[node name="WaitingOtherPlayerUI" type="Control" unique_id=649718856]
+[ext_resource type="Script" path="res://scripts/ui/menu_screen.gd" id="1_ms"]
+[ext_resource type="Script" path="res://scripts/ui/metro_backdrop.gd" id="2_bd"]
+[ext_resource type="Script" path="res://scripts/ui/metro_scene_art.gd" id="3_art"]
+
+[node name="WaitingOtherPlayerUI" type="Control" unique_id=649718856 node_paths=PackedStringArray("title_label", "reveal_nodes")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_ms")
+title_label = NodePath("CenterContainer/WaitingPlayerLabel")
+title_size = 38
+reveal_nodes = [NodePath("CenterContainer")]
 
-[node name="Background" type="Panel" parent="." unique_id=588211679]
+[node name="Background" type="Control" parent="." unique_id=588211679]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_bd")
+intensity = 0.6
+
+[node name="Loop" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -190.0
+offset_top = 70.0
+offset_right = 190.0
+offset_bottom = 450.0
+grow_horizontal = 2
+mouse_filter = 2
+script = ExtResource("3_art")
+mode = 1
 
 [node name="CenterContainer" type="CenterContainer" parent="." unique_id=599377342]
 layout_mode = 1
-anchors_preset = 15
+anchors_preset = 12
+anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_top = -170.0
+offset_bottom = -90.0
 grow_horizontal = 2
-grow_vertical = 2
+grow_vertical = 0
+mouse_filter = 2
 
 [node name="WaitingPlayerLabel" type="Label" parent="CenterContainer" unique_id=605630596]
 layout_mode = 2
-theme_override_font_sizes/font_size = 36
 text = "En attente d'un autre joueur..."

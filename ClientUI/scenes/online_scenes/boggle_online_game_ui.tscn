@@ -3,12 +3,16 @@
 [ext_resource type="Script" uid="uid://crio4w3fi8n11" path="res://scripts/boggle_online/boggle_online_game_ui.gd" id="1_iblst"]
 [ext_resource type="PackedScene" uid="uid://dalwpl7fs58kp" path="res://scenes/boggle_scenes/boggle_board_ui.tscn" id="2_e38c2"]
 [ext_resource type="PackedScene" uid="uid://bv6xooffrxoql" path="res://scenes/boggle_scenes/cancel_area.tscn" id="3_v3ct7"]
+[ext_resource type="Script" path="res://scripts/ui/metro_backdrop.gd" id="4_bd"]
+[ext_resource type="Script" path="res://scripts/ui/route_strip.gd" id="5_rs"]
+[ext_resource type="Script" path="res://scripts/ui/departure_board.gd" id="6_db"]
 
 [sub_resource type="Animation" id="Animation_re2t1"]
 length = 0.001
 
 [sub_resource type="Animation" id="Animation_6fgy4"]
 resource_name = "started_guess_animation"
+length = 0.32
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -16,8 +20,8 @@ tracks/0/path = NodePath("CancelAreaMargin1:position:x")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 1),
-"transitions": PackedFloat32Array(0.287, 1),
+"times": PackedFloat32Array(0, 0.32),
+"transitions": PackedFloat32Array(0.25, 1),
 "update": 0,
 "values": [-250.0, 0.0]
 }
@@ -28,8 +32,8 @@ tracks/1/path = NodePath("CancelAreaMargin2:position:x")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0, 1),
-"transitions": PackedFloat32Array(0.287, 1),
+"times": PackedFloat32Array(0, 0.32),
+"transitions": PackedFloat32Array(0.25, 1),
 "update": 0,
 "values": [1152.0, 902.0]
 }
@@ -40,7 +44,7 @@ _data = {
 &"started_guess_animation": SubResource("Animation_6fgy4")
 }
 
-[node name="BoggleOnlineGameUI" type="Control" unique_id=140386652 node_paths=PackedStringArray("timer_label", "boggle_board_ui", "client_score_label", "opponent_score_label", "opponent_name_label", "current_guess_label")]
+[node name="BoggleOnlineGameUI" type="Control" unique_id=140386652 node_paths=PackedStringArray("timer_label", "boggle_board_ui", "client_score_label", "opponent_score_label", "opponent_name_label", "current_guess_label", "departure_board", "route_you", "route_them", "you_name_label")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -48,95 +52,162 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_iblst")
-timer_label = NodePath("TimeLeftLabel")
+timer_label = NodePath("DepartureBoard/Margin/HBox/TimeLeftLabel")
 boggle_board_ui = NodePath("BoggleBoardUI")
-client_score_label = NodePath("CenterContainer/HBoxScore/ClientScoreLabel")
-opponent_score_label = NodePath("CenterContainer/HBoxScore/OpponentScoreLabel")
-opponent_name_label = NodePath("HBoxContainer/OpponentNameLabel")
-current_guess_label = NodePath("CurrentGuessLabel")
+client_score_label = NodePath("DepartureBoard/Margin/HBox/ScoreYou/ClientScoreLabel")
+opponent_score_label = NodePath("DepartureBoard/Margin/HBox/ScoreThem/OpponentScoreLabel")
+opponent_name_label = NodePath("RouteThem/HBoxContainer/OpponentNameLabel")
+current_guess_label = NodePath("DepartureBoard/Margin/HBox/CurrentGuessLabel")
+departure_board = NodePath("DepartureBoard")
+route_you = NodePath("RouteYou")
+route_them = NodePath("RouteThem")
+you_name_label = NodePath("RouteYou/Header/YouNameLabel")
+
+[node name="Backdrop" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("4_bd")
+intensity = 0.3
+
+[node name="RouteYou" type="Control" parent="." node_paths=PackedStringArray("header")]
+layout_mode = 0
+offset_left = 26.0
+offset_top = 116.0
+offset_right = 276.0
+offset_bottom = 628.0
+mouse_filter = 2
+script = ExtResource("5_rs")
+header = NodePath("Header")
+
+[node name="Header" type="HBoxContainer" parent="RouteYou"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 10.0
+offset_right = 120.0
+offset_bottom = 36.0
+mouse_filter = 2
+
+[node name="YouNameLabel" type="Label" parent="RouteYou/Header"]
+layout_mode = 2
+text = "YouName"
+
+[node name="RouteThem" type="Control" parent="." node_paths=PackedStringArray("header")]
+layout_mode = 0
+offset_left = 876.0
+offset_top = 116.0
+offset_right = 1126.0
+offset_bottom = 628.0
+mouse_filter = 2
+script = ExtResource("5_rs")
+line_color = Color(0.05882353, 0.52156866, 0.46666667, 1)
+header = NodePath("HBoxContainer")
+align_right = true
+
+[node name="HBoxContainer" type="HBoxContainer" parent="RouteThem" unique_id=1942898644]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -150.0
+offset_top = 10.0
+offset_right = -16.0
+offset_bottom = 36.0
+grow_horizontal = 0
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="AgainstLabel" type="Label" parent="RouteThem/HBoxContainer" unique_id=1298295353]
+layout_mode = 2
+text = "Contre:"
+
+[node name="OpponentNameLabel" type="Label" parent="RouteThem/HBoxContainer" unique_id=1966377775]
+layout_mode = 2
+text = "OpponentName"
 
 [node name="BoggleBoardUI" parent="." unique_id=910523621 node_paths=PackedStringArray("cancel_guess_area") instance=ExtResource("2_e38c2")]
 layout_mode = 1
+mouse_filter = 2
 cancel_guess_area = [NodePath("../CancelAreaMargin1"), NodePath("../CancelAreaMargin2")]
 
-[node name="TimeLeftLabel" type="Label" parent="." unique_id=395730599]
-layout_mode = 0
-offset_left = 51.0
-offset_top = 23.0
-offset_right = 91.0
-offset_bottom = 46.0
-text = "5:00"
-horizontal_alignment = 1
-
-[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1498128004]
+[node name="DepartureBoard" type="Control" parent="." node_paths=PackedStringArray("dividers")]
 layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 20.0
+offset_top = 14.0
+offset_right = -20.0
+offset_bottom = 94.0
+grow_horizontal = 2
+script = ExtResource("6_db")
+dividers = [NodePath("Margin/HBox/CurrentGuessLabel"), NodePath("Margin/HBox/ScoreYou")]
+
+[node name="Margin" type="MarginContainer" parent="DepartureBoard"]
+layout_mode = 1
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -41.0
-offset_bottom = -18.0
 grow_horizontal = 2
-grow_vertical = 0
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 16
 
-[node name="HBoxScore" type="HBoxContainer" parent="CenterContainer" unique_id=210730740]
+[node name="HBox" type="HBoxContainer" parent="DepartureBoard/Margin"]
 layout_mode = 2
-theme_override_constants/separation = 12
-metadata/_edit_use_anchors_ = true
+mouse_filter = 2
+theme_override_constants/separation = 28
 
-[node name="YourScoreLabel" type="Label" parent="CenterContainer/HBoxScore" unique_id=1967794131]
+[node name="TimeLeftLabel" type="Label" parent="DepartureBoard/Margin/HBox" unique_id=395730599]
+custom_minimum_size = Vector2(128, 0)
 layout_mode = 2
-text = "Votre score:"
+text = "5:00"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ClientScoreLabel" type="Label" parent="CenterContainer/HBoxScore" unique_id=1136568849]
+[node name="CurrentGuessLabel" type="Label" parent="DepartureBoard/Margin/HBox" unique_id=36678901]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "CurrentGuess"
+horizontal_alignment = 1
+vertical_alignment = 1
+clip_text = true
+
+[node name="ScoreYou" type="VBoxContainer" parent="DepartureBoard/Margin/HBox"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 2
+
+[node name="YourScoreLabel" type="Label" parent="DepartureBoard/Margin/HBox/ScoreYou" unique_id=1967794131]
+layout_mode = 2
+text = "Votre score:"
+horizontal_alignment = 1
+
+[node name="ClientScoreLabel" type="Label" parent="DepartureBoard/Margin/HBox/ScoreYou" unique_id=1136568849]
 layout_mode = 2
 text = "ClientScore"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="OpponentLabel" type="Label" parent="CenterContainer/HBoxScore" unique_id=837250895]
+[node name="ScoreThem" type="VBoxContainer" parent="DepartureBoard/Margin/HBox"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 2
+
+[node name="OpponentLabel" type="Label" parent="DepartureBoard/Margin/HBox/ScoreThem" unique_id=837250895]
 layout_mode = 2
 text = "Score opposant:"
 horizontal_alignment = 1
-vertical_alignment = 1
 
-[node name="OpponentScoreLabel" type="Label" parent="CenterContainer/HBoxScore" unique_id=1389627518]
+[node name="OpponentScoreLabel" type="Label" parent="DepartureBoard/Margin/HBox/ScoreThem" unique_id=1389627518]
 layout_mode = 2
 text = "OpponentScore"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1942898644]
-layout_mode = 0
-offset_left = 43.0
-offset_top = 598.0
-offset_right = 229.0
-offset_bottom = 638.0
-
-[node name="AgainstLabel" type="Label" parent="HBoxContainer" unique_id=1298295353]
-layout_mode = 2
-text = "Contre:"
-
-[node name="OpponentNameLabel" type="Label" parent="HBoxContainer" unique_id=1966377775]
-layout_mode = 2
-text = "OpponentName"
-
-[node name="CurrentGuessLabel" type="Label" parent="." unique_id=36678901]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -92.0
-offset_top = -309.0
-offset_right = 33.0
-offset_bottom = -286.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "CurrentGuess"
 horizontal_alignment = 1
 vertical_alignment = 1
 
